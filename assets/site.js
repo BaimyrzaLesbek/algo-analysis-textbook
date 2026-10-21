@@ -141,11 +141,11 @@ function drawGrowthChart(id, opts = {}) {
   const W = 680, H = 400, L = 56, R = 150, T = 20, B = 44;
   const nMax = opts.nMax || 20, yMax = opts.yMax || 400;
   const fns = [
-    { name: "log\u2082 n", f: n => Math.log2(n), c: "#1d7a46" },
-    { name: "n", f: n => n, c: "#2f5fd0" },
-    { name: "n log\u2082 n", f: n => n * Math.log2(n), c: "#7a4a00" },
-    { name: "n\u00B2", f: n => n * n, c: "#b3261e" },
-    { name: "n\u00B3", f: n => n ** 3, c: "#5b3fc4" },
+    { name: "log\u2082 n", f: n => Math.log2(n), c: "#15803d" },
+    { name: "n", f: n => n, c: "#0f766e" },
+    { name: "n log\u2082 n", f: n => n * Math.log2(n), c: "#b7791f" },
+    { name: "n\u00B2", f: n => n * n, c: "#e4572e" },
+    { name: "n\u00B3", f: n => n ** 3, c: "#6d4bc4" },
     { name: "2\u207F", f: n => 2 ** n, c: "#000" },
   ];
   const svg = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, width: W, height: H, role: "img" });
@@ -192,7 +192,7 @@ function drawLoopGrid(id, n, visit) {
       const on = visit(i, j);
       svg.appendChild(svgEl("rect", {
         x: pad + (j - 1) * cell + 2, y: pad + (i - 1) * cell + 2, width: cell - 4, height: cell - 4, rx: 5,
-        fill: on ? "#2f5fd0" : "#f1f1ee", stroke: on ? "#24489e" : "#ddd",
+        fill: on ? "#0f766e" : "#f1f1ee", stroke: on ? "#0b4f4a" : "#ddd",
       }));
     }
   }
@@ -235,14 +235,14 @@ function drawTree(id, rootLabel, children, opts = {}) {
     });
   })(root);
   (function nodes(nd) {
-    const fill = opts.color ? opts.color(nd.label) : "#e8eefc";
-    svg.appendChild(svgEl("circle", { cx: px(nd), cy: py(nd), r: 17, fill, stroke: "#24489e" }));
+    const fill = opts.color ? opts.color(nd.label) : "#e0f2ef";
+    svg.appendChild(svgEl("circle", { cx: px(nd), cy: py(nd), r: 17, fill, stroke: "#0b4f4a" }));
     svg.appendChild(svgEl("text", { x: px(nd), y: py(nd) + 5, "text-anchor": "middle", "font-size": 13, "font-weight": 600 }, opts.fmt ? opts.fmt(nd.label) : nd.label));
     nd.kids.forEach(nodes);
   })(root);
   if (opts.levelText) {
     for (let d = 0; d <= maxDepth; d++) {
-      svg.appendChild(svgEl("text", { x: W - 10, y: 30 + d * levelH + 5, "text-anchor": "end", "font-size": 13, fill: "#7a4a00" }, opts.levelText(d)));
+      svg.appendChild(svgEl("text", { x: W - 10, y: 30 + d * levelH + 5, "text-anchor": "end", "font-size": 13, fill: "#b7791f" }, opts.levelText(d)));
     }
   }
   host.appendChild(svg);
@@ -256,19 +256,19 @@ function drawStack(id, n) {
   const svg = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, width: W, height: H });
   for (let k = 0; k <= n; k++) {
     const yy = H - 30 - (k + 1) * h;
-    svg.appendChild(svgEl("rect", { x: 60, y: yy, width: 220, height: h - 4, rx: 6, fill: k === n ? "#ffe8c7" : "#e8eefc", stroke: "#24489e" }));
+    svg.appendChild(svgEl("rect", { x: 60, y: yy, width: 220, height: h - 4, rx: 6, fill: k === n ? "#fdebe5" : "#e0f2ef", stroke: "#0b4f4a" }));
     const text = k === n ? "F(0) = 1  (base case)" : `F(${n - k})  waits for F(${n - k - 1})`;
     svg.appendChild(svgEl("text", { x: 170, y: yy + h / 2 + 3, "text-anchor": "middle", "font-size": 14 }, text));
   }
   svg.appendChild(svgEl("text", { x: 170, y: H - 8, "text-anchor": "middle", "font-size": 13, fill: "#666" }, "bottom of the stack: first call"));
-  svg.appendChild(svgEl("line", { x1: 310, y1: H - 34, x2: 310, y2: H - 30 - (n + 1) * h, stroke: "#b3261e", "stroke-width": 2, "marker-end": "url(#arr)" }));
+  svg.appendChild(svgEl("line", { x1: 310, y1: H - 34, x2: 310, y2: H - 30 - (n + 1) * h, stroke: "#e4572e", "stroke-width": 2, "marker-end": "url(#arr)" }));
   const defs = svgEl("defs", {});
   const m = svgEl("marker", { id: "arr", markerWidth: 10, markerHeight: 10, refX: 5, refY: 5, orient: "auto" });
-  m.appendChild(svgEl("path", { d: "M0,0 L10,5 L0,10 z", fill: "#b3261e" }));
+  m.appendChild(svgEl("path", { d: "M0,0 L10,5 L0,10 z", fill: "#e4572e" }));
   defs.appendChild(m);
   svg.prepend(defs);
-  svg.appendChild(svgEl("text", { x: 320, y: H / 2, "font-size": 13, fill: "#b3261e" }, `depth = ${n + 1}`));
-  svg.appendChild(svgEl("text", { x: 320, y: H / 2 + 18, "font-size": 13, fill: "#b3261e" }, "frames"));
+  svg.appendChild(svgEl("text", { x: 320, y: H / 2, "font-size": 13, fill: "#e4572e" }, `depth = ${n + 1}`));
+  svg.appendChild(svgEl("text", { x: 320, y: H / 2 + 18, "font-size": 13, fill: "#e4572e" }, "frames"));
   host.appendChild(svg);
 }
 
