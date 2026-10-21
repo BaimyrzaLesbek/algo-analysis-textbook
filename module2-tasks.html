@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 2 tasks — Analysis of Algorithms</title>
+<link rel="stylesheet" href="assets/style.css">
+<script>window.MathJax = { tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"]] } };</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script defer src="assets/site.js"></script>
+</head>
+<body>
+<div class="layout">
+<main>
+
+<h1>Module 2 · Quiz and problems</h1>
+<p class="lead">Check yourself on the analysis of recursive algorithms. Theory: <a href="module2.html">Module 2</a>.</p>
+
+<div class="box tip">
+<span class="box-title">How to work with the problems</span>
+<p>Try each problem on paper first. If you are stuck, open the <b>hint</b>. Compare your result with the <b>answer</b>, and open the <b>full solution</b> only after you have tried. For every recurrence, check your formula on \(n = 1, 2, 3\).</p>
+</div>
+
+<h2 id="quiz" data-short="Quiz (10)">Quiz: 10 questions</h2>
+<div id="m2-quiz"></div>
+
+<!-- ================================================================== -->
+<h2 id="levelA" data-short="Level A">Level A problems (basic)</h2>
+
+<div class="problem" id="m2-a1">
+<h3>A1. Adding a constant <span class="badge lvA">Level A</span></h3>
+<p>Solve by backward substitution: \(x(n) = x(n-1) + 5\) for \(n &gt; 1\), \(x(1) = 0\).</p>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>After \(i\) substitutions you get \(x(n - i) + 5i\). The initial condition is at 1, so \(n - i = 1\).</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>\(x(n) = 5(n - 1)\).</p></div></details>
+<details class="solution"><summary>Full solution</summary><div class="inner">
+\[ x(n) = x(n-1) + 5 = [x(n-2) + 5] + 5 = x(n-2) + 2\cdot5 = \dots = x(n-i) + 5i. \]
+<p>Take \(i = n - 1\): \(x(n) = x(1) + 5(n-1) = 5(n-1)\).</p>
+<p>Check: \(x(2) = x(1) + 5 = 5 = 5\cdot1\) ✔, \(x(3) = 10 = 5\cdot2\) ✔.</p>
+</div></details>
+</div>
+
+<div class="problem" id="m2-a2">
+<h3>A2. Multiplying by a constant <span class="badge lvA">Level A</span></h3>
+<p>Solve: \(x(n) = 3x(n-1)\) for \(n &gt; 1\), \(x(1) = 4\). What is the order of growth?</p>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>Each substitution multiplies by another 3: \(x(n) = 3^i x(n-i)\).</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>\(x(n) = 4\cdot 3^{n-1} \in \Theta(3^n)\).</p></div></details>
+<details class="solution"><summary>Full solution</summary><div class="inner">
+\[ x(n) = 3x(n-1) = 3[3x(n-2)] = 3^2 x(n-2) = \dots = 3^i x(n-i). \]
+<p>Take \(i = n - 1\): \(x(n) = 3^{n-1} x(1) = 4\cdot3^{n-1}\). Since \(4\cdot3^{n-1} = \frac43\cdot 3^n\), \(x(n) \in \Theta(3^n)\).</p>
+<p>Check: \(x(2) = 12 = 4\cdot3\) ✔, \(x(3) = 36 = 4\cdot9\) ✔.</p>
+</div></details>
+</div>
+
+<div class="problem" id="m2-a3">
+<h3>A3. Recursive array sum <span class="badge lvA">Level A</span></h3>
+<pre class="pseudo"><b>ALGORITHM</b> RecSum(A[0..n − 1])
+<i>//Returns the sum of the elements of A, n ≥ 1</i>
+<b>if</b> n = 1 <b>return</b> A[0]
+<b>else return</b> RecSum(A[0..n − 2]) + A[n − 1]</pre>
+<p>Set up a recurrence with an initial condition for the number of additions and solve it.</p>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>How many additions does the base case perform? How many does one call do itself, outside the recursive call?</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>\(A(n) = A(n-1) + 1\), \(A(1) = 0\); \(A(n) = n - 1 \in \Theta(n)\).</p></div></details>
+<details class="solution"><summary>Full solution</summary><div class="inner">
+<p>Input size \(n\), basic operation: addition, one case.</p>
+<p>A call on \(n &gt; 1\) elements makes one recursive call on \(n - 1\) elements and one addition. The base case returns \(A[0]\) without additions:</p>
+\[ A(n) = A(n-1) + 1, \quad n &gt; 1; \qquad A(1) = 0. \]
+<p>Backward substitution: \(A(n) = A(n-i) + i\); with \(i = n - 1\): \(A(n) = A(1) + n - 1 = n - 1\).</p>
+</div></details>
+</div>
+
+<div class="problem" id="m2-a4">
+<h3>A4. Halving with a nonzero initial condition <span class="badge lvA">Level A</span></h3>
+<p>Solve for \(n = 2^k\): \(x(n) = x(n/2) + 1\) for \(n &gt; 1\), \(x(1) = 1\). (This is the worst-case number of key comparisons of recursive binary search.)</p>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>Write the recurrence in terms of \(k\): \(x(2^k) = x(2^{k-1}) + 1\). Remember \(k = \log_2 n\).</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>\(x(n) = \log_2 n + 1 \in \Theta(\log n)\).</p></div></details>
+<details class="solution"><summary>Full solution</summary><div class="inner">
+\[ x(2^k) = x(2^{k-1}) + 1 = x(2^{k-2}) + 2 = \dots = x(2^{k-i}) + i. \]
+<p>Take \(i = k\): \(x(2^k) = x(1) + k = k + 1\). Since \(k = \log_2 n\), \(x(n) = \log_2 n + 1\).</p>
+<p>Check: \(x(2) = x(1) + 1 = 2 = \log_2 2 + 1\) ✔, \(x(8) = 4 = 3 + 1\) ✔.</p>
+</div></details>
+</div>
+
+<!-- ================================================================== -->
+<h2 id="levelB" data-short="Level B">Level B problems (intermediate)</h2>
+
+<div class="problem" id="m2-b1">
+<h3>B1. A growing term \(n\) <span class="badge lvB">Level B</span></h3>
+<p>Solve: \(x(n) = x(n-1) + n\) for \(n &gt; 0\), \(x(0) = 0\). (Such a recurrence appears for an algorithm that does \(n\) operations and then recurses on \(n - 1\) elements.)</p>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>The added terms are not equal now: \(x(n) = x(n-2) + (n-1) + n\). After going all the way down you get a familiar sum.</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>\(x(n) = \dfrac{n(n+1)}{2} \in \Theta(n^2)\).</p></div></details>
+<details class="solution"><summary>Full solution</summary><div class="inner">
+\[ \begin{aligned}
+x(n) &amp;= x(n-1) + n = [x(n-2) + (n-1)] + n = x(n-2) + (n-1) + n \\
+&amp;= x(n-3) + (n-2) + (n-1) + n = \dots \\
+&amp;= x(n-i) + (n-i+1) + \dots + (n-1) + n.
+\end{aligned} \]
+<p>Take \(i = n\): \(x(n) = x(0) + 1 + 2 + \dots + n = \dfrac{n(n+1)}{2}\).</p>
+<p><b>Induction:</b> base \(x(0) = 0\) ✔; step \(x(n) = \frac{(n-1)n}{2} + n = \frac{n^2 - n + 2n}{2} = \frac{n(n+1)}{2}\) ✔.</p>
+</div></details>
+</div>
+
+<div class="problem" id="m2-b2">
+<h3>B2. Two halves plus linear work <span class="badge lvB">Level B</span></h3>
+<p>Solve for \(n = 2^k\): \(x(n) = 2x(n/2) + n\) for \(n &gt; 1\), \(x(1) = 0\). (This is the pattern of algorithms like mergesort.)</p>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>Substitute twice and look at the result: \(x(2^k) = 2^2 x(2^{k-2}) + 2\cdot 2^k\). Each substitution adds another \(2^k\).</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>\(x(n) = n\log_2 n \in \Theta(n\log n)\).</p></div></details>
+<details class="solution"><summary>Full solution</summary><div class="inner">
+\[ \begin{aligned}
+x(2^k) &amp;= 2x(2^{k-1}) + 2^k \\
+&amp;= 2[2x(2^{k-2}) + 2^{k-1}] + 2^k = 2^2 x(2^{k-2}) + 2^k + 2^k = 2^2 x(2^{k-2}) + 2\cdot 2^k \\
+&amp;= 2^2[2x(2^{k-3}) + 2^{k-2}] + 2\cdot2^k = 2^3 x(2^{k-3}) + 3\cdot 2^k \\
+&amp;= \dots = 2^i x(2^{k-i}) + i\cdot 2^k.
+\end{aligned} \]
+<p>Take \(i = k\): \(x(2^k) = 2^k x(1) + k\,2^k = k\,2^k = n\log_2 n\).</p>
+<p>Check: \(x(2) = 2\cdot0 + 2 = 2 = 2\log_2 2\) ✔; \(x(4) = 2\cdot2 + 4 = 8 = 4\cdot2\) ✔.</p>
+<p>Recursion tree view: \(\log_2 n\) levels, and on each level the work adds up to \(n\).</p>
+</div></details>
+</div>
+
+<div class="problem" id="m2-b3">
+<h3>B3. Three recursive calls <span class="badge lvB">Level B</span></h3>
+<pre class="pseudo"><b>ALGORITHM</b> Stars(n)
+<b>if</b> n = 0 <b>return</b>
+Stars(n − 1)
+Stars(n − 1)
+Stars(n − 1)
+print "∗"</pre>
+<p>Let \(S(n)\) be the number of stars printed. Set up the recurrence, solve it, and confirm the answer with a recursion tree.</p>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>Three calls on \(n - 1\), plus one star. In the tree, level \(l\) has \(3^l\) nodes; which levels print a star? Use the geometric series with \(a = 3\).</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>\(S(n) = 3S(n-1) + 1\), \(S(0) = 0\); \(S(n) = \dfrac{3^n - 1}{2} \in \Theta(3^n)\).</p></div></details>
+<details class="solution"><summary>Full solution</summary><div class="inner">
+<p>Recurrence: \(S(n) = 3S(n-1) + 1\) for \(n &gt; 0\), \(S(0) = 0\) (the base case prints nothing).</p>
+\[ \begin{aligned}
+S(n) &amp;= 3S(n-1) + 1 = 3[3S(n-2) + 1] + 1 = 3^2 S(n-2) + 3 + 1 \\
+&amp;= 3^3 S(n-3) + 3^2 + 3 + 1 = \dots = 3^i S(n-i) + \sum_{j=0}^{i-1} 3^j.
+\end{aligned} \]
+<p>Take \(i = n\): \(S(n) = 3^n\cdot 0 + \dfrac{3^n - 1}{3 - 1} = \dfrac{3^n - 1}{2}\).</p>
+<p><b>Tree:</b> level \(l\) contains \(3^l\) calls with argument \(n - l\). Calls with argument \(\ge 1\) (levels \(0, \dots, n-1\)) print one star each; the leaves (argument 0) print nothing. Total \(\sum_{l=0}^{n-1} 3^l = \frac{3^n - 1}{2}\) ✔.</p>
+<p>Check: \(S(1) = 1\), \(S(2) = 4 = (9-1)/2\) ✔.</p>
+</div></details>
+</div>
+
+<div class="problem" id="m2-b4">
+<h3>B4. Odd numbers add up to a square <span class="badge lvB">Level B</span></h3>
+<p>Solve: \(x(n) = x(n-1) + 2n - 1\) for \(n &gt; 1\), \(x(1) = 1\). Then prove your answer by induction.</p>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>Compute \(x(2), x(3), x(4)\) first and guess. Going down to \(x(1)\) you get the sum of odd numbers \(1 + 3 + 5 + \dots + (2n - 1)\).</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>\(x(n) = n^2\).</p></div></details>
+<details class="solution"><summary>Full solution</summary><div class="inner">
+<p>Small values: \(x(2) = 1 + 3 = 4\), \(x(3) = 4 + 5 = 9\), \(x(4) = 9 + 7 = 16\). Guess: \(x(n) = n^2\).</p>
+<p>Backward substitution:
+\( x(n) = x(n-1) + (2n-1) = x(n-2) + (2n-3) + (2n-1) = \dots = x(1) + \sum_{m=2}^{n} (2m - 1). \)
+Since \(x(1) = 1 = 2\cdot1 - 1\),
+\[ x(n) = \sum_{m=1}^{n} (2m - 1) = 2\cdot\frac{n(n+1)}{2} - n = n^2. \]</p>
+<p><b>Induction.</b> Base: \(x(1) = 1 = 1^2\) ✔. Step: assume \(x(n-1) = (n-1)^2\). Then \(x(n) = (n-1)^2 + 2n - 1 = n^2 - 2n + 1 + 2n - 1 = n^2\) ✔.</p>
+</div></details>
+</div>
+
+<!-- ================================================================== -->
+<h2 id="levelC" data-short="Level C">Level C problems (advanced)</h2>
+
+<div class="problem" id="m2-c1">
+<h3>C1. Proof by induction: fast exponentiation is logarithmic <span class="badge lvC">Level C</span></h3>
+<p>For the algorithm <a href="module2.html#original">Power(a, n)</a> from Module 2 (Example 2.5), the number of multiplications satisfies \(M(0) = 0\) and \(M(n) = M(\lfloor n/2\rfloor) + 1\) for even \(n &gt; 0\), \(M(n) = M(\lfloor n/2\rfloor) + 2\) for odd \(n\).</p>
+<ol type="a">
+<li>Prove by (strong) induction that \(M(n) \le 2\lfloor \log_2 n \rfloor + 2\) for all \(n \ge 1\).</li>
+<li>Show that the bound is reached exactly when \(n = 2^k - 1\).</li>
+</ol>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>In the inductive step use \(M(n) \le M(\lfloor n/2\rfloor) + 2\) and the fact that \(\lfloor \log_2 \lfloor n/2 \rfloor \rfloor = \lfloor \log_2 n \rfloor - 1\) for \(n \ge 2\). For (b), what does the binary representation of \(2^k - 1\) look like?</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>(a) Base \(M(1) = 2\); the step follows from the hint. (b) For \(n = 2^k - 1\) every number in the chain \(n, \lfloor n/2\rfloor, \dots, 1\) is odd, so \(M(2^k - 1) = 2k = 2\lfloor\log_2 n\rfloor + 2\).</p></div></details>
+<details class="solution"><summary>Full solution</summary><div class="inner">
+<p><b>(a) Base</b> \(n = 1\): \(M(1) = M(0) + 2 = 2\) and \(2\lfloor\log_2 1\rfloor + 2 = 2\). ✔</p>
+<p><b>Inductive step.</b> Let \(n \ge 2\) and assume the inequality holds for all \(m\) with \(1 \le m &lt; n\). Let \(j = \lfloor \log_2 n\rfloor\), so \(2^j \le n &lt; 2^{j+1}\) and \(j \ge 1\). Then \(2^{j-1} \le \lfloor n/2 \rfloor &lt; 2^j\), so \(m = \lfloor n/2\rfloor \ge 1\) and \(\lfloor\log_2 m\rfloor = j - 1\). Using the recurrence (in the worst case +2) and the inductive hypothesis:</p>
+\[ M(n) \le M(m) + 2 \le 2(j - 1) + 2 + 2 = 2j + 2 = 2\lfloor\log_2 n\rfloor + 2. \]
+<p>So the inequality holds for all \(n \ge 1\), and \(M(n) \in O(\log n)\). Together with the lower bound \(M(n) \ge \lfloor\log_2 n\rfloor + 2\) (every call with \(n \ge 1\) does at least one multiplication), \(M(n) \in \Theta(\log n)\).</p>
+<p><b>(b)</b> \(n = 2^k - 1\) is \(\underbrace{11\dots1}_{k}\) in binary, and \(\lfloor n/2\rfloor = 2^{k-1} - 1\) is again all ones. So every call in the chain has an odd argument and adds 2:
+\[ M(2^k - 1) = M(2^{k-1} - 1) + 2 = \dots = M(1) + 2(k-1) = 2k. \]
+Since \(\lfloor\log_2(2^k - 1)\rfloor = k - 1\), the bound is \(2(k-1) + 2 = 2k\) — equality. For any other \(n\), at least one argument in the chain is even and adds only 1, so the inequality is strict.</p>
+</div></details>
+</div>
+
+<div class="problem" id="m2-c2">
+<h3>C2. Climbing stairs: repeated subproblems <span class="badge lvC">Level C</span></h3>
+<p>You can climb a staircase 1 or 2 steps at a time. The number of ways to climb \(n\) steps is computed by:</p>
+<pre class="pseudo"><b>ALGORITHM</b> Ways(n)
+<i>//n ≥ 1</i>
+<b>if</b> n ≤ 2 <b>return</b> n
+<b>else return</b> Ways(n − 1) + Ways(n − 2)</pre>
+<ol type="a">
+<li>Write the recurrence and initial conditions for the number of additions \(A(n)\).</li>
+<li>Prove by induction that \(A(n) = F(n) - 1\), where \(F\) are the Fibonacci numbers (\(F(1) = F(2) = 1\)). What is the order of growth?</li>
+<li>How many additions does an iterative version make? Compare for \(n = 30\).</li>
+</ol>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>(a) The base cases are \(n = 1\) and \(n = 2\). (b) You need two base cases for the induction, because the recurrence uses two previous values. (c) Keep the last two values in a loop from 3 to \(n\).</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>(a) \(A(n) = A(n-1) + A(n-2) + 1\) for \(n &gt; 2\), \(A(1) = A(2) = 0\). (b) \(A(n) = F(n) - 1 \in \Theta(\varphi^n)\), \(\varphi \approx 1.618\). (c) \(n - 2\) additions; for \(n = 30\): \(832\,039\) vs. \(28\).</p></div></details>
+<details class="solution"><summary>Full solution</summary><div class="inner">
+<p><b>(a)</b> A call with \(n &gt; 2\) makes two recursive calls and one addition; the base cases make no additions:
+\[ A(n) = A(n-1) + A(n-2) + 1, \; n &gt; 2; \qquad A(1) = 0,\; A(2) = 0. \]</p>
+<p><b>(b) Induction.</b> Base: \(A(1) = 0 = F(1) - 1\), \(A(2) = 0 = F(2) - 1\). ✔ Step: let \(n &gt; 2\) and assume the formula for \(n - 1\) and \(n - 2\). Then
+\[ A(n) = (F(n-1) - 1) + (F(n-2) - 1) + 1 = F(n-1) + F(n-2) - 1 = F(n) - 1. \; ✔ \]
+Since \(F(n) \approx \varphi^n / \sqrt5\), \(A(n) \in \Theta(\varphi^n)\) — exponential.</p>
+<p><b>(c)</b> Iterative version:</p>
+<pre class="pseudo"><b>ALGORITHM</b> WaysIter(n)
+<b>if</b> n = 1 <b>return</b> 1
+a ← 1;  b ← 2          <i>//Ways(1), Ways(2)</i>
+<b>for</b> i ← 3 <b>to</b> n <b>do</b>
+    c ← a + b
+    a ← b;  b ← c
+<b>return</b> b</pre>
+<p>Additions: \(\sum_{i=3}^{n} 1 = n - 2\). For \(n = 30\): recursive \(F(30) - 1 = 832\,040 - 1 = 832\,039\) additions; iterative 28.</p>
+<p>The reason is the same as for Fibonacci: the recursive version solves the same subproblem many times (Ways(28) twice, Ways(27) three times, …).</p>
+</div></details>
+</div>
+
+<!-- ================================================================== -->
+<h2 id="mistake" data-short="Find the mistake">"Find the mistake" problems</h2>
+
+<div class="problem" id="m2-f1">
+<h3>F1. "Fibonacci is linear" <span class="badge mist">Find the mistake</span></h3>
+<p>For the naive recursive algorithm F(n) (<a href="module2.html#fibonacci">Module 2, Section 5</a>), a student writes:</p>
+<div class="box">
+<p>"The call F(n) calls F(n − 1), which calls F(n − 2), and so on down to F(1). So the recursion has \(n\) levels and each level does one addition. Therefore \(A(n) = n - 1 \in \Theta(n)\)."</p>
+</div>
+<p>Find the mistake, give the correct count, and check both answers for \(n = 4\).</p>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>Draw the recursion tree for F(4). How many calls are on each level? Is the number of levels the same as the number of calls?</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>The student confused the <b>depth</b> of the recursion (number of levels) with the <b>number of calls</b> and ignored the second call F(n − 2) — the repeated subproblems. Correct: \(A(n) = F(n+1) - 1 \in \Theta(\varphi^n)\). For \(n = 4\): 4 additions, not 3.</p></div></details>
+<details class="solution"><summary>Full solution</summary><div class="inner">
+<p>Every call with \(n &gt; 1\) makes <b>two</b> calls, so the number of calls on a level can almost double from one level to the next. The correct recurrence counts both calls:</p>
+\[ A(n) = A(n-1) + A(n-2) + 1,\quad A(0) = A(1) = 0 \quad\Rightarrow\quad A(n) = F(n+1) - 1. \]
+<p>Check \(n = 4\): \(A(2) = 1\), \(A(3) = A(2) + A(1) + 1 = 2\), \(A(4) = A(3) + A(2) + 1 = 4\). Formula: \(F(5) - 1 = 5 - 1 = 4\) ✔. The student's answer \(n - 1 = 3\) is wrong.</p>
+<p>What the student actually computed is the <b>depth</b> of the recursion, which determines the <em>memory</em> (\(\Theta(n)\)), not the time.</p>
+</div></details>
+</div>
+
+<div class="problem" id="m2-f2">
+<h3>F2. Divide-and-conquer maximum <span class="badge mist">Find the mistake</span></h3>
+<pre class="pseudo"><b>ALGORITHM</b> MaxHalves(A[l..r])
+<b>if</b> l = r <b>return</b> A[l]
+m ← ⌊(l + r)/2⌋
+a ← MaxHalves(A[l..m])
+b ← MaxHalves(A[m + 1..r])
+<b>if</b> a &gt; b <b>return</b> a <b>else return</b> b</pre>
+<p>A student analyzes the number of comparisons \(a &gt; b\) for \(n = 2^k\) elements:</p>
+<div class="box">
+<p>"\(C(n) = 2C(n/2) + 1\), \(C(1) = 0\). Backward substitution:
+\(C(2^k) = 2C(2^{k-1}) + 1 = C(2^{k-1}) + 1 + 1 = C(2^{k-2}) + 3 = \dots = C(1) + k = \log_2 n\).
+So the divide-and-conquer maximum is \(\Theta(\log n)\) — much faster than the \(n - 1\) comparisons of MaxElement."</p>
+</div>
+<p>Find the mistake, solve the recurrence correctly and check for \(n = 4\).</p>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>Look at the second "=" sign in the student's substitution. Where did the factor 2 go? Also: can any algorithm find the maximum of \(n\) elements with fewer than \(n - 1\) comparisons?</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>The student lost the coefficient 2 during substitution (and the arithmetic \(1 + 1 = 3\) is wrong too). Correct: \(C(n) = n - 1 \in \Theta(n)\). For \(n = 4\): 3 comparisons.</p></div></details>
+<details class="solution"><summary>Full solution</summary><div class="inner">
+<p>The recurrence is correct; the substitution is not. Substituting \(C(2^{k-1}) = 2C(2^{k-2}) + 1\):</p>
+\[ \begin{aligned}
+C(2^k) &amp;= 2C(2^{k-1}) + 1 = 2[2C(2^{k-2}) + 1] + 1 = 2^2 C(2^{k-2}) + 2 + 1 \\
+&amp;= 2^3 C(2^{k-3}) + 2^2 + 2 + 1 = \dots = 2^i C(2^{k-i}) + 2^i - 1.
+\end{aligned} \]
+<p>With \(i = k\): \(C(2^k) = 2^k\cdot 0 + 2^k - 1 = n - 1\).</p>
+<p>Check \(n = 4\): two calls on 2 elements (1 comparison each) and one final comparison: 3. Student: \(\log_2 4 = 2\). ✘</p>
+<p>Sanity check: every element except the maximum must "lose" at least one comparison, so any comparison-based maximum algorithm needs at least \(n - 1\) comparisons. A \(\Theta(\log n)\) result should have looked suspicious.</p>
+</div></details>
+</div>
+
+<!-- ================================================================== -->
+<h2 id="emp" data-short="Empirical task">Empirical verification task</h2>
+
+<div class="problem" id="m2-e1">
+<h3>E1. Count multiplications in fast exponentiation <span class="badge emp">Empirical</span></h3>
+<p>Write a Python program that:</p>
+<ol>
+<li>implements <code>Power(a, n)</code> (Module 2, Example 2.5) with a multiplication counter, and checks that the result equals <code>a ** n</code>;</li>
+<li>for \(n = 2^k\), \(k = 0, \dots, 20\), compares the counter with \(\log_2 n + 2\);</li>
+<li>for all \(n\) from 1 to 10 000, checks \(\lfloor\log_2 n\rfloor + 2 \le M(n) \le 2\lfloor\log_2 n\rfloor + 2\) and finds the values of \(n\) where the upper bound is reached;</li>
+<li>implements naive recursive Fibonacci with an addition counter and checks \(A(n) = F(n+1) - 1\) for \(n \le 25\); measures the time for \(n = 20, 25, 30\).</li>
+</ol>
+<p>State the conclusions.</p>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>Return the pair <code>(value, count)</code> from the recursive function, or use a global/nonlocal counter. <code>n.bit_length() - 1</code> equals \(\lfloor \log_2 n\rfloor\) exactly for \(n \ge 1\) (no floating-point issues). Use <code>time.perf_counter()</code> for timing.</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>The counter equals \(\log_2 n + 2\) for all powers of 2; the bounds hold for all \(n \le 10\,000\); the upper bound is reached exactly at \(n = 1, 3, 7, 15, \dots, 8191\) (\(2^k - 1\)). Fibonacci additions equal \(F(n+1) - 1\); the time grows about \(\varphi^5 \approx 11\) times for every +5 in \(n\).</p></div></details>
+<details class="solution"><summary>Full solution (code)</summary><div class="inner">
+<pre><code>import time
+
+def power(a, n):
+    """Returns (a**n, number of multiplications)."""
+    if n == 0:
+        return 1, 0
+    t, m = power(a, n // 2)
+    if n % 2 == 0:
+        return t * t, m + 1
+    return t * t * a, m + 2
+
+for k in range(21):
+    n = 2 ** k
+    value, m = power(2, n)
+    print(n, m, k + 2, m == k + 2)
+
+tight = []
+for n in range(1, 10001):
+    value, m = power(2, n)
+    assert value == 2 ** n
+    lg = n.bit_length() - 1           # floor(log2 n)
+    assert lg + 2 &lt;= m &lt;= 2 * lg + 2
+    if m == 2 * lg + 2:
+        tight.append(n)
+print("upper bound reached at:", tight)  # [1, 3, 7, 15, ..., 8191]
+
+def fib_naive(n):
+    """Returns (F(n), number of additions)."""
+    if n &lt;= 1:
+        return n, 0
+    f1, a1 = fib_naive(n - 1)
+    f2, a2 = fib_naive(n - 2)
+    return f1 + f2, a1 + a2 + 1
+
+for n in range(26):
+    assert fib_naive(n)[1] == fib_naive(n + 1)[0] - 1
+
+for n in (20, 25, 30):
+    t0 = time.perf_counter()
+    f, adds = fib_naive(n)
+    print(n, adds, f"{time.perf_counter() - t0:.3f} s")</code></pre>
+<figure><img src="code/module2_plots.png" alt="Power multiplications between the two log bounds; naive vs iterative Fibonacci additions" style="max-width:100%"><figcaption>Left: every \(M(n)\) lies between \(\lfloor\log_2 n\rfloor + 2\) and \(2\lfloor\log_2 n\rfloor + 2\). Right (log scale): naive Fibonacci grows as a straight line — exponential — while the iterative version grows linearly.</figcaption></figure>
+<p><b>Conclusions:</b> the recurrence solution \(M(2^k) = k + 2\) and the bounds of problem C1 are confirmed experimentally; the multiplication count grows like \(\log n\) (doubling \(n\) adds 1 or 2 multiplications). Naive Fibonacci makes exactly \(F(n+1) - 1\) additions and its time grows exponentially. The full program with plots is <code>code/empirical_module2.py</code>.</p>
+</div></details>
+</div>
+
+<div class="page-nav"></div>
+</main>
+</div>
+
+<script>
+const R = String.raw;
+document.addEventListener("DOMContentLoaded", () => {
+  renderQuiz("m2-quiz", [
+    { q: R`A recursive algorithm makes one recursive call on \(n - 1\) and 2 multiplications of its own; the base case \(n = 0\) makes none. Which recurrence describes the multiplications?`,
+      options: [
+        { t: R`\(M(n) = M(n-1) + 2,\; M(0) = 0\)`, ok: true, why: "One recursive call contributes M(n − 1), plus the 2 multiplications done by the call itself; the base case gives M(0) = 0." },
+        { t: R`\(M(n) = 2M(n-1),\; M(0) = 0\)`, ok: false, why: "This would mean two recursive calls and no own work; with M(0) = 0 it gives 0 for every n." },
+        { t: R`\(M(n) = M(n-1) + 1,\; M(0) = 0\)`, ok: false, why: "The call itself does 2 multiplications, not 1." },
+        { t: R`\(M(n) = M(n-2) + 2,\; M(0) = 0\)`, ok: false, why: "The recursive call is on n − 1, not n − 2." },
+      ]},
+    { q: "Why must a recurrence relation be accompanied by an initial condition?",
+      options: [
+        { t: "Without it the recurrence has infinitely many solutions", ok: true, why: R`E.g. \(x(n) = x(n-1) + 1\) is satisfied by \(n\), \(n + 5\), \(n - 3\), … The initial condition picks one.` },
+        { t: "It makes the solution grow faster", ok: false, why: "The initial condition fixes the solution; it does not change the type of recurrence." },
+        { t: "It is only needed for recursive algorithms with two calls", ok: false, why: "Every recurrence needs at least one initial condition." },
+        { t: "It is not needed; it is a formality", ok: false, why: "Wrong initial conditions are a common source of off-by-one errors." },
+      ]},
+    { q: R`Solve: \(x(n) = x(n-1) + 3\), \(x(0) = 0\).`,
+      options: [
+        { t: R`\(3n\)`, ok: true, why: R`\(x(n) = x(n-i) + 3i\); with \(i = n\): \(x(0) + 3n = 3n\).` },
+        { t: R`\(3^n\)`, ok: false, why: "The recurrence adds 3 each time; it does not multiply by 3." },
+        { t: R`\(3(n-1)\)`, ok: false, why: "That is the answer for the initial condition x(1) = 0." },
+        { t: R`\(n + 3\)`, ok: false, why: R`Check: \(x(2) = 6\), but \(2 + 3 = 5\).` },
+      ]},
+    { q: "How many moves does the Tower of Hanoi algorithm make with 5 disks?",
+      options: [
+        { t: "31", ok: true, why: R`\(M(n) = 2^n - 1\), \(2^5 - 1 = 31\).` },
+        { t: "32", ok: false, why: R`Off by one: \(2^5 = 32\), but the formula is \(2^n - 1\).` },
+        { t: "25", ok: false, why: R`That would be \(n^2\); the count is exponential.` },
+        { t: "9", ok: false, why: R`That is \(2n - 1\); each call makes two recursive calls, not one.` },
+      ]},
+    { q: R`An algorithm makes two recursive calls on size \(n - 1\) and a constant amount of other work. Its time is ...`,
+      options: [
+        { t: R`\(\Theta(n)\)`, ok: false, why: "That would be one call on n − 1. With two calls the tree doubles at every level." },
+        { t: R`\(\Theta(n^2)\)`, ok: false, why: R`\(2^n\) grows much faster than \(n^2\).` },
+        { t: R`\(\Theta(2^n)\)`, ok: true, why: R`Same recurrence type as Hanoi: \(C(n) = 2C(n-1) + c \Rightarrow \Theta(2^n)\).` },
+        { t: R`\(\Theta(\log n)\)`, ok: false, why: "Logarithmic time comes from halving the size, not from decreasing it by 1." },
+      ]},
+    { q: R`Solve for \(n = 2^k\): \(x(n) = x(n/2) + 1\), \(x(1) = 0\).`,
+      options: [
+        { t: R`\(\log_2 n\)`, ok: true, why: R`\(x(2^k) = x(2^{k-i}) + i\), with \(i = k\): \(x(1) + k = k = \log_2 n\).` },
+        { t: R`\(n/2\)`, ok: false, why: "The size is halved, but only one operation is added per step." },
+        { t: R`\(n - 1\)`, ok: false, why: R`That is the solution of \(x(n) = 2x(n/2) + 1\).` },
+        { t: R`\(\log_2 n + 1\)`, ok: false, why: "That would be correct for x(1) = 1." },
+      ]},
+    { q: "What is the main reason the naive recursive Fibonacci algorithm is slow?",
+      options: [
+        { t: "Additions of large numbers are slow", ok: false, why: "Even counting each addition as one step, the number of additions is exponential." },
+        { t: "The same subproblems are solved many times", ok: true, why: R`E.g. \(F(n-2)\) is computed both by \(F(n)\) and by \(F(n-1)\); the tree has \(\Theta(\varphi^n)\) nodes.` },
+        { t: "The recursion depth is exponential", ok: false, why: "The depth is only n; it is the number of calls that is exponential." },
+        { t: "Recursion is always slower than iteration", ok: false, why: "Recursive factorial makes the same n multiplications as the loop." },
+      ]},
+    { q: R`How much extra memory does the recursive factorial \(F(n)\) use because of the call stack?`,
+      options: [
+        { t: R`\(\Theta(1)\)`, ok: false, why: "Every call waits for the next one, so n + 1 frames are on the stack at the same time." },
+        { t: R`\(\Theta(n)\)`, ok: true, why: R`The recursion depth is \(n + 1\), and each frame takes constant memory.` },
+        { t: R`\(\Theta(n!)\)`, ok: false, why: "That is the value computed, not the memory." },
+        { t: R`\(\Theta(2^n)\)`, ok: false, why: "There is only one recursive call per call, so the stack grows linearly." },
+      ]},
+    { q: "Which function is tail-recursive?",
+      options: [
+        { t: R`<code>F(n): if n = 0 return 1 else return F(n − 1) ∗ n</code>`, ok: false, why: "After F(n − 1) returns, the multiplication by n still has to be done." },
+        { t: R`<code>G(n, acc): if n = 0 return acc else return G(n − 1, acc ∗ n)</code>`, ok: true, why: "The recursive call is the last action; its result is returned directly." },
+        { t: R`<code>H(n): if n ≤ 1 return n else return H(n − 1) + H(n − 2)</code>`, ok: false, why: "After both calls an addition is performed." },
+        { t: R`<code>K(n): if n = 1 return 0 else return K(⌊n/2⌋) + 1</code>`, ok: false, why: "The +1 is done after the recursive call returns." },
+      ]},
+    { q: R`Backward substitution gave \(x(n) = x(n-i) + i\), and the initial condition is \(x(1) = 0\). Which \(i\) should we take?`,
+      options: [
+        { t: R`\(i = n\)`, ok: false, why: R`Then we need \(x(0)\), which is not given.` },
+        { t: R`\(i = n - 1\)`, ok: true, why: R`Then \(n - i = 1\) and \(x(n) = x(1) + n - 1 = n - 1\).` },
+        { t: R`\(i = 1\)`, ok: false, why: R`That is only one substitution: \(x(n) = x(n-1) + 1\), still not closed form.` },
+        { t: R`\(i = \log_2 n\)`, ok: false, why: "That is used when the argument is halved, not decreased by 1." },
+      ]},
+  ]);
+});
+</script>
+</body>
+</html>

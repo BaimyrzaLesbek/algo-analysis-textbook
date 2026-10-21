@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glossary — Analysis of Algorithms</title>
+<link rel="stylesheet" href="assets/style.css">
+<script>window.MathJax = { tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"]] } };</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script defer src="assets/site.js"></script>
+</head>
+<body>
+<div class="layout">
+<main>
+
+<h1>Glossary of key terms</h1>
+<p class="lead">Terms in alphabetical order. The link after each term points to the section where it is explained.</p>
+
+<dl class="glossary">
+<dt id="g-accumulator">Accumulator</dt>
+<dd>An extra parameter that carries a partially computed result through recursive calls, used to make a function tail-recursive. <a href="module2.html#rec-vs-iter">Module 2 §6</a></dd>
+
+<dt id="g-avg">Average case \(C_{avg}(n)\)</dt>
+<dd>The expected number of basic operations on a random input of size \(n\), under a stated probability model of the inputs. <a href="intro.html#cases">Intro §5</a>, <a href="module1.html#average">Module 1 §5</a></dd>
+
+<dt id="g-backward">Backward substitution</dt>
+<dd>A method of solving a recurrence: repeatedly replace \(x(n-1)\) (or \(x(n/2)\)) by its own recurrence, find the general pattern after \(i\) steps, and choose \(i\) to reach the initial condition. <a href="module2.html#backward">Module 2 §2</a></dd>
+
+<dt id="g-basic">Basic operation</dt>
+<dd>The operation that contributes most to the running time, usually the most time-consuming operation in the innermost loop. We count how many times it is executed. <a href="intro.html#basic-op">Intro §2</a></dd>
+
+<dt id="g-best">Best case \(C_{best}(n)\)</dt>
+<dd>The minimum number of basic operations over all inputs of size \(n\). <a href="intro.html#cases">Intro §5</a></dd>
+
+<dt id="g-bigo">Big-O, \(O(g(n))\)</dt>
+<dd>The set of functions that grow no faster than \(g(n)\): \(t(n) \le c\,g(n)\) for all \(n \ge n_0\). <a href="intro.html#notation">Intro §4</a></dd>
+
+<dt id="g-omega">Big-Omega, \(\Omega(g(n))\)</dt>
+<dd>The set of functions that grow no slower than \(g(n)\): \(t(n) \ge c\,g(n)\) for all \(n \ge n_0\). <a href="intro.html#notation">Intro §4</a></dd>
+
+<dt id="g-theta">Big-Theta, \(\Theta(g(n))\)</dt>
+<dd>The set of functions that grow at the same rate as \(g(n)\): both \(O(g(n))\) and \(\Omega(g(n))\). <a href="intro.html#notation">Intro §4</a></dd>
+
+<dt id="g-closed">Closed-form formula</dt>
+<dd>An explicit formula with a fixed number of operations, without \(\sum\) signs or references to other values of the function, e.g. \(\frac{n(n+1)}{2}\). <a href="module1.html#plan">Module 1 §1</a></dd>
+
+<dt id="g-depth">Recursion depth</dt>
+<dd>The maximum number of recursive calls that are active (on the stack) at the same time. It determines the extra memory of a recursive algorithm. <a href="module2.html#rec-vs-iter">Module 2 §6</a></dd>
+
+<dt id="g-empirical">Empirical verification</dt>
+<dd>Checking a formula by running a program with an operation counter and comparing the counted values with the formula. <a href="module1.html#empirical">Module 1 §7</a></dd>
+
+<dt id="g-geom">Geometric series</dt>
+<dd>A sum \(1 + a + a^2 + \dots + a^n = \frac{a^{n+1} - 1}{a - 1}\) (\(a \ne 1\)). <a href="module1.html#sums">Module 1 §2</a></dd>
+
+<dt id="g-induction">Mathematical induction</dt>
+<dd>A proof method: show the statement for the initial value (base), then show that if it holds for smaller values it holds for \(n\) (inductive step). Used to verify solutions of recurrences. <a href="module2.html#backward">Module 2 §2</a></dd>
+
+<dt id="g-initial">Initial condition</dt>
+<dd>The value of a recurrence at its smallest argument, e.g. \(M(0) = 0\). It comes from the base case of the algorithm. <a href="module2.html#plan">Module 2 §1</a></dd>
+
+<dt id="g-size">Input size</dt>
+<dd>A parameter \(n\) that measures how big the input is (number of elements, matrix order, or the number of bits of a number). <a href="intro.html#size">Intro §1</a></dd>
+
+<dt id="g-memo">Memoization</dt>
+<dd>Storing the result of each subproblem the first time it is computed and reusing it instead of recomputing. <a href="module2.html#fibonacci">Module 2 §5</a></dd>
+
+<dt id="g-growth">Order of growth</dt>
+<dd>How fast a function grows as \(n \to \infty\), ignoring constant factors and lower-order terms (e.g. \(\log n\), \(n\), \(n^2\), \(2^n\)). <a href="intro.html#growth">Intro §3</a></dd>
+
+<dt id="g-recurrence">Recurrence relation</dt>
+<dd>An equation that expresses \(x(n)\) through values of \(x\) at smaller arguments, e.g. \(M(n) = 2M(n-1) + 1\). <a href="module2.html#plan">Module 2 §1</a></dd>
+
+<dt id="g-tree">Recursion tree</dt>
+<dd>A diagram where each node is one call of a recursive algorithm and its children are the calls it makes. The number of nodes gives the time, the height gives the memory. <a href="module2.html#examples">Module 2 §3</a></dd>
+
+<dt id="g-smooth">Smoothness rule</dt>
+<dd>If \(T(n)\) is eventually non-decreasing and \(T(n) \in \Theta(f(n))\) for \(n = 2^k\), where \(f\) is a "smooth" function such as \(\log n\), \(n\), \(n\log n\), \(n^2\), then \(T(n) \in \Theta(f(n))\) for all \(n\). <a href="module2.html#examples">Module 2 §3</a></dd>
+
+<dt id="g-stack">Stack frame</dt>
+<dd>The memory kept for one active call: parameters, local variables and the return address. <a href="module2.html#rec-vs-iter">Module 2 §6</a></dd>
+
+<dt id="g-sum">Summation (\(\sum\)) notation</dt>
+<dd>\(\sum_{i=l}^{u} a_i = a_l + a_{l+1} + \dots + a_u\); \(i\) is the index, \(l\) and \(u\) are the bounds. <a href="module1.html#sums">Module 1 §2</a></dd>
+
+<dt id="g-tail">Tail recursion</dt>
+<dd>Recursion in which the recursive call is the last action of the function. It can be turned into a loop with constant stack depth. <a href="module2.html#rec-vs-iter">Module 2 §6</a></dd>
+
+<dt id="g-worst">Worst case \(C_{worst}(n)\)</dt>
+<dd>The maximum number of basic operations over all inputs of size \(n\); a guarantee that the algorithm never does more. <a href="intro.html#cases">Intro §5</a></dd>
+</dl>
+
+<div class="page-nav"></div>
+</main>
+</div>
+</body>
+</html>

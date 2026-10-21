@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 1: Nonrecursive algorithms — Analysis of Algorithms</title>
+<link rel="stylesheet" href="assets/style.css">
+<script>window.MathJax = { tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"]] } };</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script defer src="assets/site.js"></script>
+</head>
+<body>
+<div class="layout">
+<main>
+
+<h1>Module 1. Mathematical analysis of nonrecursive algorithms</h1>
+<p class="lead">A nonrecursive algorithm is built from loops. To analyze it, we write the number of basic operations as a <b>sum</b> and then simplify that sum.</p>
+
+<div class="box goal">
+<span class="box-title">Goals of the module</span>
+<p>By the end of this module you will be able to:</p>
+<ol>
+<li>apply the five-step plan to any algorithm made of loops;</li>
+<li>turn nested loops into sums, including loops whose bounds depend on the outer variable;</li>
+<li>simplify sums using standard rules and formulas and find the order of growth;</li>
+<li>analyze the worst, best and average case separately when they differ;</li>
+<li>recognize the six typical mistakes;</li>
+<li>check a derived formula by counting operations in a Python program.</li>
+</ol>
+<p><b>Time needed:</b> about 2–3 hours, plus 2 hours for the <a href="module1-tasks.html">tasks</a>.</p>
+</div>
+
+<!-- ================================================================== -->
+<h2 id="plan" data-short="General plan">1. The general plan of analysis</h2>
+<p>Every analysis in this module follows the same five steps (Levitin, Section 2.3).</p>
+<ol class="steps">
+<li><b>Choose the input size parameter.</b> Decide which number describes how big the input is (usually \(n\), the number of elements).
+<br><i>Why:</i> the answer will be a function of this parameter.</li>
+<li><b>Identify the basic operation.</b> As a rule, it is the operation in the innermost loop.
+<br><i>Why:</i> it is executed most often, so it determines the order of growth.</li>
+<li><b>Check whether the count depends only on the size.</b> If it also depends on the particular input (for example, the loop can stop early), analyze the worst, best and, if needed, average case separately.
+<br><i>Why:</i> otherwise "the number of operations for size \(n\)" is not a single number.</li>
+<li><b>Set up a sum</b> that expresses how many times the basic operation is executed. Each loop becomes one \(\sum\) sign, with the same bounds as the loop.</li>
+<li><b>Simplify the sum</b> with standard formulas and rules to get a closed-form formula, or at least the order of growth.</li>
+</ol>
+<div class="box warn">
+<span class="box-title">Typical mistakes at each step</span>
+<ul>
+<li>Step 1: using the <em>value</em> of a number instead of its <em>size</em> (number of bits).</li>
+<li>Step 2: choosing an operation outside the innermost loop, such as an assignment executed once.</li>
+<li>Step 3: forgetting about an early <code>return</code> and presenting the worst case as "the" answer.</li>
+<li>Step 4: wrong bounds in the sum (off-by-one).</li>
+<li>Step 5: algebra mistakes; dropping a term that is not of lower order.</li>
+</ul>
+More details are in the section <a href="#mistakes">Typical mistakes</a>.
+</div>
+
+<!-- ================================================================== -->
+<h2 id="sums" data-short="Summation tools">2. Summation tools</h2>
+<p>The notation \(\displaystyle\sum_{i=l}^{u} a_i\) means \(a_l + a_{l+1} + \dots + a_u\). The variable \(i\) is the <b>index</b>, \(l\) and \(u\) are the lower and upper <b>bounds</b>.</p>
+
+<h3>Rules for manipulating sums</h3>
+\[
+\text{(R1)}\quad \sum_{i=l}^{u} c\,a_i = c \sum_{i=l}^{u} a_i
+\qquad\qquad
+\text{(R2)}\quad \sum_{i=l}^{u} (a_i \pm b_i) = \sum_{i=l}^{u} a_i \pm \sum_{i=l}^{u} b_i
+\]
+\[
+\text{(R3)}\quad \sum_{i=l}^{u} a_i = \sum_{i=l}^{m} a_i + \sum_{i=m+1}^{u} a_i \quad (l \le m &lt; u)
+\]
+<p>(R1): a constant factor can be taken outside the sum. (R2): a sum of a sum is split into two sums. (R3): a sum can be split into two parts.</p>
+
+<h3>Counting the number of terms</h3>
+\[
+\text{(S1)}\quad \sum_{i=l}^{u} 1 = u - l + 1 \qquad (l \le u)
+\]
+<div class="box tip">
+<span class="box-title">Remember the "+1"</span>
+<p>From 3 to 7 there are \(7 - 3 + 1 = 5\) numbers: 3, 4, 5, 6, 7. From \(0\) to \(n-1\) there are \(n\) numbers. From \(i+1\) to \(n-1\) there are \(n-1-i\) numbers.</p>
+</div>
+
+<h3>Standard formulas</h3>
+\[
+\text{(S2)}\quad \sum_{i=1}^{n} i = 1 + 2 + \dots + n = \frac{n(n+1)}{2} \approx \frac{1}{2}n^2 \in \Theta(n^2)
+\]
+\[
+\text{(S3)}\quad \sum_{i=1}^{n} i^2 = 1^2 + 2^2 + \dots + n^2 = \frac{n(n+1)(2n+1)}{6} \approx \frac{1}{3}n^3 \in \Theta(n^3)
+\]
+\[
+\text{(S4)}\quad \sum_{i=0}^{n} a^i = 1 + a + \dots + a^n = \frac{a^{n+1} - 1}{a - 1} \quad (a \ne 1),
+\qquad \text{in particular} \quad \sum_{i=0}^{n} 2^i = 2^{n+1} - 1
+\]
+\[
+\text{(S5)}\quad \sum_{i=1}^{n} i^k = 1^k + 2^k + \dots + n^k \approx \frac{n^{k+1}}{k+1} \in \Theta(n^{k+1})
+\]
+<p>(S5) is the general pattern: summing \(i^k\) "adds one to the exponent". It is useful when we only need the order of growth.</p>
+
+<div class="box">
+<span class="box-title">Mini-example: using the rules together</span>
+\[
+\sum_{i=1}^{n} (2i + 3) \overset{R2}{=} \sum_{i=1}^{n} 2i + \sum_{i=1}^{n} 3
+\overset{R1}{=} 2\sum_{i=1}^{n} i + 3\sum_{i=1}^{n} 1
+\overset{S2,S1}{=} 2\cdot\frac{n(n+1)}{2} + 3n = n^2 + 4n.
+\]
+<p>Check for \(n = 2\): \((2+3) + (4+3) = 12\) and \(2^2 + 4\cdot2 = 12\). ✔</p>
+</div>
+
+<!-- ================================================================== -->
+<h2 id="examples" data-short="Worked examples">3. Worked examples</h2>
+<p>Each example is solved with the five steps of the plan. Read the pseudocode first and try to guess the answer before reading the analysis.</p>
+
+<!-- MaxElement -->
+<div class="example">
+<h3>Example 1.1. MaxElement — the largest element of an array</h3>
+<pre class="pseudo"><b>ALGORITHM</b> MaxElement(A[0..n − 1])
+<i>//Determines the value of the largest element in a given array</i>
+<i>//Input: An array A[0..n − 1] of real numbers</i>
+<i>//Output: The value of the largest element in A</i>
+maxval ← A[0]
+<b>for</b> i ← 1 <b>to</b> n − 1 <b>do</b>
+    <b>if</b> A[i] &gt; maxval
+        maxval ← A[i]
+<b>return</b> maxval</pre>
+<p><span class="plan-step">1. Input size:</span> the number of elements \(n\).</p>
+<p><span class="plan-step">2. Basic operation:</span> the comparison \(A[i] &gt; maxval\). It is inside the loop and is executed on every iteration. (The assignment \(maxval \leftarrow A[i]\) is not a good choice: how often it runs depends on the data.)</p>
+<p><span class="plan-step">3. Cases:</span> the loop always runs from 1 to \(n-1\) and never stops early, so there is only one case.</p>
+<p><span class="plan-step">4. Sum:</span> one comparison per value of \(i\) from 1 to \(n-1\):
+\[ C(n) = \sum_{i=1}^{n-1} 1. \]</p>
+<p><span class="plan-step">5. Solve:</span> by (S1), \(C(n) = (n-1) - 1 + 1 = n - 1 \in \Theta(n).\)</p>
+</div>
+
+<!-- UniqueElements -->
+<div class="example">
+<h3>Example 1.2. UniqueElements — are all elements distinct?</h3>
+<pre class="pseudo"><b>ALGORITHM</b> UniqueElements(A[0..n − 1])
+<i>//Determines whether all the elements in a given array are distinct</i>
+<i>//Output: Returns "true" if all the elements in A are distinct and "false" otherwise</i>
+<b>for</b> i ← 0 <b>to</b> n − 2 <b>do</b>
+    <b>for</b> j ← i + 1 <b>to</b> n − 1 <b>do</b>
+        <b>if</b> A[i] = A[j] <b>return</b> false
+<b>return</b> true</pre>
+<p><span class="plan-step">1. Input size:</span> \(n\).</p>
+<p><span class="plan-step">2. Basic operation:</span> the comparison \(A[i] = A[j]\) in the innermost loop.</p>
+<p><span class="plan-step">3. Cases:</span> the algorithm can stop early (<code>return false</code>), so the count depends on the input. We analyze the worst and the best case.</p>
+<ul>
+<li><b>Worst case:</b> the loops run completely. This happens when all elements are distinct, or when the only equal pair is the last pair compared.</li>
+<li><b>Best case:</b> \(A[0] = A[1]\). The first comparison already returns false: \(C_{best}(n) = 1\).</li>
+</ul>
+<p><span class="plan-step">4. Sum (worst case):</span> for fixed \(i\), \(j\) goes from \(i+1\) to \(n-1\):
+\[ C_{worst}(n) = \sum_{i=0}^{n-2} \sum_{j=i+1}^{n-1} 1. \]</p>
+<p><span class="plan-step">5. Solve:</span> the inner sum has \((n-1)-(i+1)+1 = n-1-i\) terms, so
+\[ C_{worst}(n) = \sum_{i=0}^{n-2} (n-1-i) = (n-1) + (n-2) + \dots + 1 = \frac{(n-1)n}{2} \approx \frac12 n^2 \in \Theta(n^2). \]</p>
+<p>So \(C_{worst}(n) \in \Theta(n^2)\) and \(C_{best}(n) \in \Theta(1)\). In general, the algorithm is in \(O(n^2)\).</p>
+</div>
+
+<!-- Matrix multiplication -->
+<div class="example">
+<h3>Example 1.3. MatrixMultiplication — product of two \(n \times n\) matrices</h3>
+<pre class="pseudo"><b>ALGORITHM</b> MatrixMultiplication(A[0..n − 1, 0..n − 1], B[0..n − 1, 0..n − 1])
+<i>//Multiplies two square matrices of order n by the definition-based algorithm</i>
+<i>//Output: Matrix C = AB</i>
+<b>for</b> i ← 0 <b>to</b> n − 1 <b>do</b>
+    <b>for</b> j ← 0 <b>to</b> n − 1 <b>do</b>
+        C[i, j] ← 0.0
+        <b>for</b> k ← 0 <b>to</b> n − 1 <b>do</b>
+            C[i, j] ← C[i, j] + A[i, k] ∗ B[k, j]
+<b>return</b> C</pre>
+<p><span class="plan-step">1. Input size:</span> the order of the matrices \(n\).</p>
+<p><span class="plan-step">2. Basic operation:</span> multiplication \(A[i,k] * B[k,j]\) in the innermost loop. (Additions happen exactly as often, so choosing addition gives the same count.)</p>
+<p><span class="plan-step">3. Cases:</span> no early exit — one case.</p>
+<p><span class="plan-step">4. Sum:</span> three loops give three sums:
+\[ M(n) = \sum_{i=0}^{n-1} \sum_{j=0}^{n-1} \sum_{k=0}^{n-1} 1. \]</p>
+<p><span class="plan-step">5. Solve:</span> work from the inside out. The innermost sum is \(n\), the middle is \(n \cdot n\), the outer is \(n \cdot n^2\):
+\[ M(n) = \sum_{i=0}^{n-1} \sum_{j=0}^{n-1} n = \sum_{i=0}^{n-1} n^2 = n^3 \in \Theta(n^3). \]</p>
+<p>Running time: \(T(n) \approx c_m M(n) + c_a A(n) = (c_m + c_a)\,n^3\), where \(c_m\) and \(c_a\) are the times of one multiplication and one addition.</p>
+</div>
+
+<!-- Dependent bound -->
+<div class="example">
+<h3>Example 1.4. A loop with a dependent bound</h3>
+<pre class="pseudo">sum ← 0
+<b>for</b> i ← 1 <b>to</b> n <b>do</b>
+    <b>for</b> j ← 1 <b>to</b> i <b>do</b>
+        sum ← sum + i ∗ j
+<b>return</b> sum</pre>
+<p><span class="plan-step">1. Input size:</span> \(n\).
+<span class="plan-step">2. Basic operation:</span> the multiplication \(i * j\).
+<span class="plan-step">3. Cases:</span> one case.</p>
+<p><span class="plan-step">4. Sum:</span> the inner loop bound is \(i\), which <b>depends</b> on the outer variable. For \(i = 1\) the inner loop runs once, for \(i = 2\) twice, …, for \(i = n\) it runs \(n\) times:
+\[ C(n) = \sum_{i=1}^{n} \sum_{j=1}^{i} 1 = \sum_{i=1}^{n} i. \]</p>
+<p><span class="plan-step">5. Solve:</span> by (S2), \(C(n) = \dfrac{n(n+1)}{2} \in \Theta(n^2).\)</p>
+<figure id="grid-fig">
+<figcaption>Figure 1.1. Each blue square is one execution of the inner body for \(n = 6\). They form a triangle: 21 squares \(= 6 \cdot 7 / 2\), about half of the \(6 \times 6\) square.</figcaption>
+</figure>
+<div class="box tip">
+<span class="box-title">Picture to remember</span>
+<p>A dependent bound like \(j \le i\) "cuts the square in half". The order of growth is still \(n^2\); only the constant changes from 1 to \(\tfrac12\).</p>
+</div>
+</div>
+
+<!-- Multiplicative loop -->
+<div class="example">
+<h3>Example 1.5. A multiplicative loop — number of binary digits</h3>
+<pre class="pseudo"><b>ALGORITHM</b> Binary(n)
+<i>//Input: A positive decimal integer n</i>
+<i>//Output: The number of binary digits in n's binary representation</i>
+count ← 1
+<b>while</b> n &gt; 1 <b>do</b>
+    count ← count + 1
+    n ← ⌊n/2⌋
+<b>return</b> count</pre>
+<p><span class="plan-step">1. Input size:</span> the number \(n\) itself (we count how many times the loop runs as a function of \(n\)).</p>
+<p><span class="plan-step">2. Basic operation:</span> the comparison \(n &gt; 1\) that controls the loop.</p>
+<p><span class="plan-step">3. Cases:</span> one case for each \(n\).</p>
+<p><span class="plan-step">4. Count:</span> here the loop variable is <b>divided by 2</b> each time, not increased by 1, so we cannot just write \(\sum 1\) from 1 to \(n\). Follow the value of \(n\):</p>
+<figure>
+<svg viewBox="0 0 640 120" width="640" height="120" role="img" aria-label="n halves: 16, 8, 4, 2, 1">
+  <g font-size="15" text-anchor="middle" font-family="Segoe UI, sans-serif">
+    <rect x="20" y="30" width="320" height="34" rx="6" fill="#e8eefc" stroke="#24489e"/><text x="180" y="52">n = 16</text>
+    <rect x="350" y="30" width="160" height="34" rx="6" fill="#e8eefc" stroke="#24489e"/><text x="430" y="52">8</text>
+    <rect x="520" y="30" width="60" height="34" rx="6" fill="#e8eefc" stroke="#24489e"/><text x="550" y="52">4</text>
+    <rect x="588" y="30" width="22" height="34" rx="4" fill="#e8eefc" stroke="#24489e"/><text x="599" y="52">2</text>
+    <rect x="614" y="30" width="14" height="34" rx="3" fill="#ffe8c7" stroke="#7a4a00"/>
+    <text x="320" y="100" fill="#5d6475">16 → 8 → 4 → 2 → 1 : the body runs 4 = log₂16 times; the comparison n &gt; 1 runs 5 times</text>
+  </g>
+</svg>
+<figcaption>Figure 1.2. Halving reaches 1 after \(\log_2 n\) steps (orange = final value 1, the loop stops).</figcaption>
+</figure>
+<p>After \(t\) iterations the value is about \(n / 2^t\). The loop stops when it reaches 1, i.e. after \(\lfloor \log_2 n \rfloor\) iterations. The comparison is made once more at the end (when it is false).</p>
+<p><span class="plan-step">5. Result:</span> \(C(n) = \lfloor \log_2 n \rfloor + 1 \in \Theta(\log n).\)</p>
+<div class="box tip">
+<span class="box-title">Rule</span>
+<p>If a loop variable is multiplied or divided by a constant \(b &gt; 1\) on every iteration, the loop runs \(\Theta(\log_b n) = \Theta(\log n)\) times.</p>
+</div>
+</div>
+
+<!-- ================================================================== -->
+<h2 id="original" data-short="Original examples">4. Two more examples <span class="badge orig">Original</span></h2>
+<p>These examples are not in the lectures. They show the same plan on new algorithms.</p>
+
+<div class="example">
+<h3>Example 1.6. SelectionSort <span class="badge orig">Original</span></h3>
+<p>Selection sort finds the smallest element of the unsorted part and swaps it to the front.</p>
+<pre class="pseudo"><b>ALGORITHM</b> SelectionSort(A[0..n − 1])
+<i>//Sorts a given array by selection sort</i>
+<i>//Output: Array A[0..n − 1] sorted in nondecreasing order</i>
+<b>for</b> i ← 0 <b>to</b> n − 2 <b>do</b>
+    min ← i
+    <b>for</b> j ← i + 1 <b>to</b> n − 1 <b>do</b>
+        <b>if</b> A[j] &lt; A[min]  min ← j
+    swap A[i] and A[min]</pre>
+<p><span class="plan-step">1. Input size:</span> \(n\).</p>
+<p><span class="plan-step">2. Basic operation:</span> the key comparison \(A[j] &lt; A[min]\).</p>
+<p><span class="plan-step">3. Cases:</span> there is no early exit; both loops always run completely. The number of comparisons is the same for <b>every</b> input of size \(n\), even an already sorted array.</p>
+<p><span class="plan-step">4. Sum:</span>
+\[ C(n) = \sum_{i=0}^{n-2} \sum_{j=i+1}^{n-1} 1 = \sum_{i=0}^{n-2} (n-1-i). \]</p>
+<p><span class="plan-step">5. Solve:</span> substitute \(k = n-1-i\); when \(i\) goes from 0 to \(n-2\), \(k\) goes from \(n-1\) down to 1:
+\[ C(n) = \sum_{k=1}^{n-1} k = \frac{(n-1)n}{2} \in \Theta(n^2). \]</p>
+<p><b>Bonus:</b> the number of swaps is \(n - 1\) (one per outer iteration), which is only \(\Theta(n)\). That is why selection sort is used when swapping is expensive.</p>
+<p><b>Check for \(n = 4\):</b> \(i=0\): 3 comparisons, \(i=1\): 2, \(i=2\): 1. Total 6, and \(4\cdot3/2 = 6\). ✔</p>
+</div>
+
+<div class="example">
+<h3>Example 1.7. PrefixAverages — a hidden quadratic cost <span class="badge orig">Original</span></h3>
+<p>For every position \(i\), compute the average of the first \(i+1\) elements: \(P[i] = (A[0] + \dots + A[i]) / (i+1)\).</p>
+<pre class="pseudo"><b>ALGORITHM</b> PrefixAverages(A[0..n − 1])
+<i>//Output: Array P[0..n − 1], P[i] is the average of A[0..i]</i>
+<b>for</b> i ← 0 <b>to</b> n − 1 <b>do</b>
+    s ← 0
+    <b>for</b> j ← 0 <b>to</b> i <b>do</b>
+        s ← s + A[j]
+    P[i] ← s / (i + 1)
+<b>return</b> P</pre>
+<p><span class="plan-step">1. Input size:</span> \(n\).</p>
+<p><span class="plan-step">2. Basic operation:</span> the addition \(s + A[j]\) (innermost loop). The division is outside the inner loop and runs only \(n\) times.</p>
+<p><span class="plan-step">3. Cases:</span> one case.</p>
+<p><span class="plan-step">4. Sum:</span> the inner loop runs for \(j = 0, \dots, i\), that is \(i+1\) times:
+\[ A(n) = \sum_{i=0}^{n-1} \sum_{j=0}^{i} 1 = \sum_{i=0}^{n-1} (i+1). \]</p>
+<p><span class="plan-step">5. Solve:</span> substitute \(k = i+1\), so \(k\) goes from 1 to \(n\):
+\[ A(n) = \sum_{k=1}^{n} k = \frac{n(n+1)}{2} \in \Theta(n^2). \]</p>
+<div class="box tip">
+<span class="box-title">Lesson: analysis helps you improve the algorithm</span>
+<p>The inner loop recomputes the same partial sum again and again. If we keep a running sum (<code>s ← s + A[i]</code> once per \(i\), with <code>s ← 0</code> before the loop), we need only \(n\) additions: \(\Theta(n)\) instead of \(\Theta(n^2)\).</p>
+</div>
+</div>
+
+<!-- ================================================================== -->
+<h2 id="average" data-short="Average case">5. Average case: sequential search</h2>
+<pre class="pseudo"><b>ALGORITHM</b> SequentialSearch(A[0..n − 1], K)
+<i>//Searches for a given value in a given array by sequential search</i>
+<i>//Output: The index of the first element in A that matches K or −1 if there are no matching elements</i>
+i ← 0
+<b>while</b> i &lt; n <b>and</b> A[i] ≠ K <b>do</b>
+    i ← i + 1
+<b>if</b> i &lt; n <b>return</b> i
+<b>else return</b> −1</pre>
+<p>Basic operation: the key comparison \(A[i] \ne K\). Worst case \(C_{worst}(n) = n\), best case \(C_{best}(n) = 1\). What happens "on average"?</p>
+<div class="box def">
+<span class="box-title">Assumptions</span>
+<ol>
+<li>The probability that the search is successful (the key is in the array) is \(p\), where \(0 \le p \le 1\).</li>
+<li>In a successful search, the first match is equally likely to be at any of the \(n\) positions: probability \(p/n\) for each position.</li>
+</ol>
+</div>
+<p>If the first match is at position \(i\) (counting from 1), the algorithm makes exactly \(i\) comparisons. If the search is unsuccessful (probability \(1 - p\)), it makes \(n\) comparisons. The average is the <b>expected value</b>: the sum of (number of comparisons) × (probability).</p>
+\[
+C_{avg}(n) = \Big[ 1\cdot\frac{p}{n} + 2\cdot\frac{p}{n} + \dots + n\cdot\frac{p}{n} \Big] + n\cdot(1-p)
+= \frac{p}{n}\sum_{i=1}^{n} i + n(1-p)
+= \frac{p}{n}\cdot\frac{n(n+1)}{2} + n(1-p).
+\]
+\[
+\boxed{\,C_{avg}(n) = \frac{p(n+1)}{2} + n(1-p)\,}
+\]
+<table>
+<tr><th>\(p\)</th><th>meaning</th><th>\(C_{avg}(n)\)</th></tr>
+<tr><td>1</td><td>the key is always present</td><td>\(\frac{n+1}{2}\): about half of the array is checked</td></tr>
+<tr><td>0</td><td>the key is never present</td><td>\(n\): the whole array is checked</td></tr>
+<tr><td>1/2</td><td>present half of the time</td><td>\(\frac{n+1}{4} + \frac{n}{2} = \frac{3n+1}{4}\)</td></tr>
+</table>
+<p>In every case \(C_{avg}(n) \in \Theta(n)\).</p>
+<div class="box warn">
+<span class="box-title">The average case is not "(best + worst) / 2"</span>
+<p>Here \((1 + n)/2\) happens to equal \(C_{avg}\) for \(p = 1\), but this is a coincidence. The average case always needs a probability model of the inputs.</p>
+</div>
+
+<!-- ================================================================== -->
+<h2 id="mistakes" data-short="Typical mistakes">6. Typical mistakes</h2>
+<table>
+<tr><th>Mistake</th><th>Example</th><th>How to avoid it</th></tr>
+<tr><td><b>Wrong basic operation</b></td>
+<td>In MaxElement, counting the assignment <code>maxval ← A[i]</code>. It runs 0 times on a decreasing array and \(n-1\) times on an increasing one, which looks like "cases" that do not really exist.</td>
+<td>Take the operation that is executed on <em>every</em> iteration of the innermost loop.</td></tr>
+<tr><td><b>Size vs. value</b></td>
+<td>Trial-division primality test makes about \(\sqrt n\) divisions. "\(\sqrt n\) is sublinear, so the algorithm is fast" — wrong: the size is \(b \approx \log_2 n\) bits, and \(\sqrt n \approx 2^{b/2}\) is exponential in \(b\).</td>
+<td>For algorithms on a single number, measure the size in bits.</td></tr>
+<tr><td><b>Mixing up cases</b></td>
+<td>"UniqueElements is \(\Theta(n^2)\)". Only the worst case is; the best case is \(\Theta(1)\).</td>
+<td>When there is an early exit, always say which case you mean. Use \(O\) for a statement about all inputs.</td></tr>
+<tr><td><b>Off-by-one errors</b></td>
+<td>Writing \(n - i\) instead of \(n - 1 - i\) for the number of values of \(j\) from \(i+1\) to \(n-1\).</td>
+<td>Use \(u - l + 1\) and check with a small \(n\) by hand.</td></tr>
+<tr><td><b>Ignoring an early exit</b></td>
+<td>Writing \(\sum_{i=0}^{n-1} 1 = n\) for sequential search as if it always scans the whole array.</td>
+<td>Look for <code>return</code>, <code>break</code> or a compound loop condition.</td></tr>
+<tr><td><b>Hidden cost</b></td>
+<td>A single line like <code>if K in A</code> or <code>B ← copy of A</code> hides a loop of \(n\) operations. So does calling another algorithm inside a loop.</td>
+<td>Expand every built-in operation into the loop it really performs before counting.</td></tr>
+</table>
+
+<!-- ================================================================== -->
+<h2 id="empirical" data-short="Empirical verification">7. Empirical verification</h2>
+<p>A formula derived on paper can contain a mistake. A quick way to check it is to <b>count the operations in a real program</b> and compare.</p>
+<ol class="steps">
+<li>Implement the algorithm in Python exactly as in the pseudocode.</li>
+<li>Add a counter variable and increase it by 1 right next to the basic operation.</li>
+<li>Run the program for several sizes \(n\) (for example 10, 100, 1000) and for the inputs of the case you analyzed (worst, best, random).</li>
+<li>Compare the counter with the formula. For an exact formula the numbers must be <b>equal</b>. For an order of growth, the ratio \(C(n)/g(n)\) should approach a constant.</li>
+</ol>
+<pre><code>def unique_elements(a):
+    count = 0                       # operation counter
+    n = len(a)
+    for i in range(n - 1):          # i = 0 .. n-2
+        for j in range(i + 1, n):   # j = i+1 .. n-1
+            count += 1              # one comparison A[i] = A[j]
+            if a[i] == a[j]:
+                return False, count
+    return True, count
+
+for n in [10, 100, 1000]:
+    _, c = unique_elements(list(range(n)))   # distinct elements = worst case
+    print(n, c, n * (n - 1) // 2, c / n**2)</code></pre>
+<p>Output: the second and third columns are equal (45, 4950, 499500), and the last column approaches 0.5 — the constant \(\tfrac12\) in \(\tfrac12 n^2\).</p>
+
+<p><b>Try it here.</b> The widget below runs the loops of the examples in your browser and compares the counter with the formula.</p>
+<div id="counter-widget"></div>
+<p>The full programs for this module are in <code>code/empirical_module1.py</code> (see <a href="module1-tasks.html#emp">the empirical task</a>).</p>
+
+<!-- ================================================================== -->
+<h2 id="summary" data-short="Summary & cheat sheet">8. Summary and formula cheat sheet</h2>
+<div class="box summary">
+<span class="box-title">Summary</span>
+<ul>
+<li>Plan: size → basic operation → cases? → sum → simplify.</li>
+<li>Each loop becomes one \(\sum\) with the same bounds. Nested loops become nested sums; simplify from the inside out.</li>
+<li>Independent loops multiply (\(n \cdot n \cdot n = n^3\)); a dependent bound \(j \le i\) gives \(\sum i \approx n^2/2\).</li>
+<li>A variable that is multiplied or divided by a constant gives \(\Theta(\log n)\) iterations.</li>
+<li>With an early exit, analyze the worst, best and average case separately. The average case needs a probability model.</li>
+<li>Always check the result on a small \(n\) by hand, or with an operation counter.</li>
+</ul>
+</div>
+<table>
+<tr><th>Formula</th><th>Value</th><th>Order</th></tr>
+<tr><td>\(\sum_{i=l}^{u} 1\)</td><td>\(u - l + 1\)</td><td>—</td></tr>
+<tr><td>\(\sum_{i=1}^{n} i\)</td><td>\(\frac{n(n+1)}{2}\)</td><td>\(\Theta(n^2)\)</td></tr>
+<tr><td>\(\sum_{i=1}^{n} i^2\)</td><td>\(\frac{n(n+1)(2n+1)}{6}\)</td><td>\(\Theta(n^3)\)</td></tr>
+<tr><td>\(\sum_{i=1}^{n} i^k\)</td><td>\(\approx \frac{n^{k+1}}{k+1}\)</td><td>\(\Theta(n^{k+1})\)</td></tr>
+<tr><td>\(\sum_{i=0}^{n} a^i\), \(a \ne 1\)</td><td>\(\frac{a^{n+1}-1}{a-1}\)</td><td>\(\Theta(a^n)\) for \(a &gt; 1\)</td></tr>
+<tr><td>\(\sum_{i=0}^{n} 2^i\)</td><td>\(2^{n+1} - 1\)</td><td>\(\Theta(2^n)\)</td></tr>
+<tr><td>\(\sum c\,a_i\), \(\sum (a_i \pm b_i)\)</td><td>\(c\sum a_i\), \(\sum a_i \pm \sum b_i\)</td><td>—</td></tr>
+<tr><td>Halving / doubling loop</td><td>\(\lfloor \log_2 n \rfloor + 1\) checks</td><td>\(\Theta(\log n)\)</td></tr>
+<tr><td>Sequential search, average</td><td>\(\frac{p(n+1)}{2} + n(1-p)\)</td><td>\(\Theta(n)\)</td></tr>
+</table>
+<p>Ready? Go to the <a href="module1-tasks.html">Module 1 quiz and problems</a>.</p>
+
+<div class="page-nav"></div>
+</main>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const fig = document.getElementById("grid-fig");
+  drawLoopGrid("grid-fig", 6, (i, j) => j <= i);
+  fig.appendChild(fig.querySelector("figcaption"));
+
+  const nested = (n, inner) => { let c = 0; for (let i = 0; i < n; i++) c += inner(i); return c; };
+  opCounterWidget("counter-widget", [
+    { name: "MaxElement", count: n => { let c = 0; for (let i = 1; i <= n - 1; i++) c++; return c; },
+      formula: n => n - 1, formulaText: "n − 1" },
+    { name: "UniqueElements (worst case)", min: 2,
+      count: n => { let c = 0; for (let i = 0; i <= n - 2; i++) for (let j = i + 1; j <= n - 1; j++) c++; return c; },
+      formula: n => n * (n - 1) / 2, formulaText: "n(n − 1)/2" },
+    { name: "MatrixMultiplication", max: 20,
+      count: n => nested(n, () => nested(n, () => n)), formula: n => n ** 3, formulaText: "n³" },
+    { name: "Dependent bound (j ≤ i)",
+      count: n => { let c = 0; for (let i = 1; i <= n; i++) for (let j = 1; j <= i; j++) c++; return c; },
+      formula: n => n * (n + 1) / 2, formulaText: "n(n + 1)/2" },
+    { name: "Binary(n) — comparisons n > 1", max: 1000,
+      count: n => { let c = 0; while (true) { c++; if (!(n > 1)) break; n = Math.floor(n / 2); } return c; },
+      formula: n => Math.floor(Math.log2(n)) + 1, formulaText: "⌊log₂ n⌋ + 1" },
+    { name: "PrefixAverages — additions",
+      count: n => { let c = 0; for (let i = 0; i < n; i++) for (let j = 0; j <= i; j++) c++; return c; },
+      formula: n => n * (n + 1) / 2, formulaText: "n(n + 1)/2" },
+  ]);
+});
+</script>
+</body>
+</html>

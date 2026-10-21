@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 2: Recursive algorithms — Analysis of Algorithms</title>
+<link rel="stylesheet" href="assets/style.css">
+<script>window.MathJax = { tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"]] } };</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script defer src="assets/site.js"></script>
+</head>
+<body>
+<div class="layout">
+<main>
+
+<h1>Module 2. Mathematical analysis of recursive algorithms</h1>
+<p class="lead">A recursive algorithm calls itself on a smaller input. Its number of operations is therefore described by an equation that refers to itself — a <b>recurrence relation</b>. In this module we learn to set up and solve such equations.</p>
+
+<div class="box goal">
+<span class="box-title">Goals of the module</span>
+<p>By the end of this module you will be able to:</p>
+<ol>
+<li>apply the five-step plan to a recursive algorithm;</li>
+<li>write a recurrence relation together with its initial condition;</li>
+<li>solve a recurrence by backward substitution and check the result by induction;</li>
+<li>draw a recursion tree and use it to count operations;</li>
+<li>explain why the naive recursive Fibonacci algorithm is exponential and how to fix it;</li>
+<li>estimate the memory used by recursion (stack depth) and recognize tail recursion.</li>
+</ol>
+<p><b>Prerequisite:</b> <a href="module1.html#sums">summation formulas</a> from Module 1, especially the geometric series. <b>Time needed:</b> about 2–3 hours plus 2 hours for the <a href="module2-tasks.html">tasks</a>.</p>
+</div>
+
+<!-- ================================================================== -->
+<h2 id="plan" data-short="General plan">1. The general plan of analysis</h2>
+<p>The plan is almost the same as in Module 1 (Levitin, Section 2.4). Only step 4 changes: instead of a sum we write a recurrence relation.</p>
+<ol class="steps">
+<li><b>Choose the input size parameter</b> \(n\).</li>
+<li><b>Identify the basic operation.</b></li>
+<li><b>Check whether the count depends only on \(n\).</b> If not, analyze the worst, best and average cases separately.</li>
+<li><b>Set up a recurrence relation, with an appropriate initial condition,</b> for the number of times the basic operation is executed.</li>
+<li><b>Solve the recurrence</b>, or at least find the order of growth of its solution.</li>
+</ol>
+
+<div class="box def">
+<span class="box-title">Definitions</span>
+<p>A <b>recurrence relation</b> (recurrence) is an equation that expresses \(x(n)\) through the values of \(x\) at smaller arguments, for example \(x(n) = x(n-1) + 1\).</p>
+<p>An <b>initial condition</b> gives the value of \(x\) at the smallest argument, for example \(x(0) = 0\). Without it the recurrence has infinitely many solutions.</p>
+<p>To <b>solve</b> a recurrence means to find an explicit formula for \(x(n)\) that does not refer to other values of \(x\).</p>
+</div>
+
+<div class="box tip">
+<span class="box-title">How to write the recurrence: a recipe</span>
+<p>Look at <b>one call</b> of the algorithm on input \(n\) and ask:</p>
+<ol>
+<li>How many recursive calls does it make, and on which sizes? Each call contributes \(C(\text{its size})\).</li>
+<li>How many basic operations does it do <b>itself</b>, outside the recursive calls? Add this number.</li>
+<li>What happens in the base case (the case without recursion)? This gives the initial condition.</li>
+</ol>
+</div>
+
+<!-- ================================================================== -->
+<h2 id="backward" data-short="Backward substitution">2. The method of backward substitutions</h2>
+<p>The idea: replace \(x(n-1)\) using the same recurrence, then \(x(n-2)\), and so on, until a pattern appears. Then jump directly to the initial condition.</p>
+<ol class="steps">
+<li>Write the recurrence for \(n\).</li>
+<li>Substitute the recurrence for the smaller argument (\(n-1\) or \(n/2\)) into it. Simplify.</li>
+<li>Repeat 2–3 times and <b>guess the general form</b> after \(i\) substitutions.</li>
+<li>Choose \(i\) so that the argument becomes the initial value (e.g. \(n - i = 0\)).</li>
+<li>Substitute the initial condition and simplify to a closed form.</li>
+<li><b>Verify</b> the result: by mathematical induction, or at least by checking a few small values of \(n\).</li>
+</ol>
+
+<div class="box">
+<span class="box-title">Why do we need step 6?</span>
+<p>Step 3 is a guess ("…and so on"). It is usually right, but to be sure we prove it. A proof by <b>mathematical induction</b> has two parts:</p>
+<ul>
+<li><b>Base:</b> the formula is correct for the initial value of \(n\).</li>
+<li><b>Inductive step:</b> if the formula is correct for \(n - 1\), then it is correct for \(n\) (use the recurrence).</li>
+</ul>
+</div>
+
+<!-- ================================================================== -->
+<h2 id="examples" data-short="Worked examples">3. Worked examples</h2>
+
+<!-- Factorial -->
+<div class="example">
+<h3>Example 2.1. Factorial \(n!\)</h3>
+<pre class="pseudo"><b>ALGORITHM</b> F(n)
+<i>//Computes n! recursively</i>
+<i>//Input: A nonnegative integer n</i>
+<i>//Output: The value of n!</i>
+<b>if</b> n = 0 <b>return</b> 1
+<b>else return</b> F(n − 1) ∗ n</pre>
+<p><span class="plan-step">1. Input size:</span> \(n\). (Strictly speaking, the size is the number of bits; here we follow Levitin and count as a function of \(n\).)</p>
+<p><span class="plan-step">2. Basic operation:</span> the multiplication \(F(n-1) * n\).</p>
+<p><span class="plan-step">3. Cases:</span> one case.</p>
+<p><span class="plan-step">4. Recurrence:</span> to compute \(F(n)\) for \(n &gt; 0\), the algorithm makes \(M(n-1)\) multiplications inside the call \(F(n-1)\) and one more multiplication itself. For \(n = 0\) it makes none:
+\[ M(n) = M(n-1) + 1 \quad \text{for } n &gt; 0, \qquad M(0) = 0. \]</p>
+<p><span class="plan-step">5. Solve</span> by backward substitution:
+\[ \begin{aligned}
+M(n) &amp;= M(n-1) + 1 \\
+&amp;= [M(n-2) + 1] + 1 = M(n-2) + 2 \\
+&amp;= [M(n-3) + 1] + 2 = M(n-3) + 3 \\
+&amp;\;\;\vdots \\
+&amp;= M(n-i) + i.
+\end{aligned} \]
+Take \(i = n\): \(M(n) = M(0) + n = n\).</p>
+<p><b>Verify by induction.</b> Base: \(M(0) = 0\). ✔ Step: if \(M(n-1) = n - 1\), then \(M(n) = (n-1) + 1 = n\). ✔</p>
+<p><b>Answer:</b> \(M(n) = n \in \Theta(n)\).</p>
+<figure id="stack-fig">
+<figcaption>Figure 2.1. The call stack while computing \(F(4)\). Each call waits for the one above it. The stack holds \(n + 1 = 5\) frames at its deepest point — this is the memory cost of recursion.</figcaption>
+</figure>
+</div>
+
+<!-- Hanoi -->
+<div class="example">
+<h3>Example 2.2. Tower of Hanoi</h3>
+<p>There are \(n\) disks of different sizes on peg 1, the largest at the bottom. Move them all to peg 3, one disk at a time, never putting a larger disk on a smaller one. Peg 2 is auxiliary.</p>
+<pre class="pseudo"><b>ALGORITHM</b> Hanoi(n, from, to, aux)
+<i>//Moves n disks from peg "from" to peg "to" using peg "aux"</i>
+<b>if</b> n = 1
+    move the disk from <i>from</i> to <i>to</i>
+<b>else</b>
+    Hanoi(n − 1, from, aux, to)      <i>//move n − 1 disks out of the way</i>
+    move disk n from <i>from</i> to <i>to</i>
+    Hanoi(n − 1, aux, to, from)      <i>//put them back on top</i></pre>
+<p><span class="plan-step">1. Input size:</span> the number of disks \(n\).
+<span class="plan-step">2. Basic operation:</span> moving one disk.
+<span class="plan-step">3. Cases:</span> one case.</p>
+<p><span class="plan-step">4. Recurrence:</span> two recursive calls on \(n-1\) disks plus one move:
+\[ M(n) = 2M(n-1) + 1 \quad \text{for } n &gt; 1, \qquad M(1) = 1. \]</p>
+<p><span class="plan-step">5. Solve:</span>
+\[ \begin{aligned}
+M(n) &amp;= 2M(n-1) + 1 \\
+&amp;= 2[2M(n-2) + 1] + 1 = 2^2 M(n-2) + 2 + 1 \\
+&amp;= 2^2[2M(n-3) + 1] + 2 + 1 = 2^3 M(n-3) + 2^2 + 2 + 1 \\
+&amp;\;\;\vdots \\
+&amp;= 2^i M(n-i) + 2^{i-1} + \dots + 2 + 1 = 2^i M(n-i) + 2^i - 1.
+\end{aligned} \]
+The initial condition is at \(n = 1\), so take \(i = n - 1\):
+\[ M(n) = 2^{n-1} M(1) + 2^{n-1} - 1 = 2^{n-1} + 2^{n-1} - 1 = 2^n - 1 \in \Theta(2^n). \]</p>
+<p><b>Verify by induction.</b> Base: \(M(1) = 2^1 - 1 = 1\). ✔ Step: if \(M(n-1) = 2^{n-1} - 1\), then \(M(n) = 2(2^{n-1} - 1) + 1 = 2^n - 1\). ✔</p>
+
+<p><b>Recursion tree.</b> Draw each call as a node with its value of \(n\); its children are the calls it makes.</p>
+<figure id="hanoi-tree">
+<figcaption>Figure 2.2. Recursion tree of Hanoi(4). Every node makes exactly one move. Level \(l\) has \(2^l\) nodes, so the total is \(\sum_{l=0}^{n-1} 2^l = 2^n - 1 = 15\) moves.</figcaption>
+</figure>
+<p>The tree gives the same answer without algebra: count the nodes level by level and use the geometric series.</p>
+<div class="box warn">
+<span class="box-title">How big is \(2^n - 1\)?</span>
+<p>For 64 disks: \(2^{64} - 1 \approx 1.8\cdot10^{19}\) moves. At one move per second that is about 585 billion years. The algorithm is optimal — no algorithm can solve the puzzle with fewer moves — the <em>problem</em> itself is exponential.</p>
+</div>
+</div>
+
+<!-- BinRec -->
+<div class="example">
+<h3>Example 2.3. Counting binary digits recursively</h3>
+<pre class="pseudo"><b>ALGORITHM</b> BinRec(n)
+<i>//Input: A positive decimal integer n</i>
+<i>//Output: The number of binary digits in n's binary representation</i>
+<b>if</b> n = 1 <b>return</b> 1
+<b>else return</b> BinRec(⌊n/2⌋) + 1</pre>
+<p><span class="plan-step">1. Input size:</span> \(n\).
+<span class="plan-step">2. Basic operation:</span> the addition \(+1\).
+<span class="plan-step">3. Cases:</span> one case.</p>
+<p><span class="plan-step">4. Recurrence:</span> one recursive call on \(\lfloor n/2 \rfloor\) plus one addition:
+\[ A(n) = A(\lfloor n/2 \rfloor) + 1 \quad \text{for } n &gt; 1, \qquad A(1) = 0. \]</p>
+<p><span class="plan-step">5. Solve.</span> The floor makes backward substitution hard. We use the standard trick: solve only for \(n = 2^k\), where \(\lfloor n/2 \rfloor = 2^{k-1}\) exactly:
+\[ \begin{aligned}
+A(2^k) &amp;= A(2^{k-1}) + 1 \\
+&amp;= [A(2^{k-2}) + 1] + 1 = A(2^{k-2}) + 2 \\
+&amp;\;\;\vdots \\
+&amp;= A(2^{k-i}) + i = A(2^0) + k = k.
+\end{aligned} \]
+Since \(k = \log_2 n\): \(A(n) = \log_2 n \in \Theta(\log n)\) for \(n = 2^k\).</p>
+<p>For all \(n\) the exact solution is \(A(n) = \lfloor \log_2 n \rfloor\). By the <b>smoothness rule</b> (Levitin, Appendix B), the order of growth found for powers of 2 is valid for all \(n\), because \(A(n)\) is non-decreasing and \(\log n\) is a "smooth" function.</p>
+</div>
+
+<!-- ================================================================== -->
+<h2 id="original" data-short="Original examples">4. Two more examples <span class="badge orig">Original</span></h2>
+
+<div class="example">
+<h3>Example 2.4. Recursive maximum search <span class="badge orig">Original</span></h3>
+<pre class="pseudo"><b>ALGORITHM</b> RecMax(A[0..n − 1])
+<i>//Returns the largest element of A, n ≥ 1</i>
+<b>if</b> n = 1 <b>return</b> A[0]
+m ← RecMax(A[0..n − 2])
+<b>if</b> A[n − 1] &gt; m <b>return</b> A[n − 1]
+<b>else return</b> m</pre>
+<p><span class="plan-step">1. Input size:</span> the number of elements \(n\).</p>
+<p><span class="plan-step">2. Basic operation:</span> the comparison \(A[n-1] &gt; m\).</p>
+<p><span class="plan-step">3. Cases:</span> no early exit depends on the data — one case.</p>
+<p><span class="plan-step">4. Recurrence:</span> one recursive call on \(n - 1\) elements plus one comparison. The base case (one element) makes no comparison:
+\[ C(n) = C(n-1) + 1 \quad \text{for } n &gt; 1, \qquad C(1) = 0. \]</p>
+<p><span class="plan-step">5. Solve:</span>
+\( C(n) = C(n-1) + 1 = C(n-2) + 2 = \dots = C(n-i) + i. \)
+Take \(i = n - 1\): \(C(n) = C(1) + n - 1 = n - 1 \in \Theta(n)\).</p>
+<p><b>Verify.</b> Base: \(C(1) = 1 - 1 = 0\). ✔ Step: \(C(n) = (n - 2) + 1 = n - 1\). ✔</p>
+<p><b>Comparison with MaxElement</b> (Module 1, Example 1.1): the same \(n - 1\) comparisons. But RecMax also uses a stack of depth \(n\), so it needs \(\Theta(n)\) extra memory, while the loop needs \(\Theta(1)\).</p>
+<div class="box warn">
+<span class="box-title">Careful with the initial condition</span>
+<p>If you write \(C(1) = 1\) (as if the base case made a comparison), you get \(C(n) = n\) — wrong by one. Always read the base case of the pseudocode to see how many basic operations it really performs.</p>
+</div>
+</div>
+
+<div class="example">
+<h3>Example 2.5. Fast exponentiation \(a^n\) <span class="badge orig">Original</span></h3>
+<p>Idea: \(a^{n} = (a^{n/2})^2\) if \(n\) is even, and \(a^{n} = (a^{\lfloor n/2\rfloor})^2 \cdot a\) if \(n\) is odd.</p>
+<pre class="pseudo"><b>ALGORITHM</b> Power(a, n)
+<i>//Computes a<sup>n</sup> for a real a and an integer n ≥ 0</i>
+<b>if</b> n = 0 <b>return</b> 1
+t ← Power(a, ⌊n/2⌋)
+<b>if</b> n mod 2 = 0 <b>return</b> t ∗ t
+<b>else return</b> t ∗ t ∗ a</pre>
+<p><span class="plan-step">1. Input size:</span> the exponent \(n\).</p>
+<p><span class="plan-step">2. Basic operation:</span> multiplication.</p>
+<p><span class="plan-step">3. Cases:</span> an even \(n\) costs 1 multiplication in the current call, an odd \(n\) costs 2. So the count depends on the binary digits of \(n\), not only on its magnitude. We first solve for \(n = 2^k\).</p>
+<p><span class="plan-step">4. Recurrence:</span>
+\[ M(n) = \begin{cases} M(\lfloor n/2\rfloor) + 1, &amp; n \text{ even}, n &gt; 0,\\ M(\lfloor n/2\rfloor) + 2, &amp; n \text{ odd}, \end{cases} \qquad M(0) = 0. \]
+In particular \(M(1) = M(0) + 2 = 2\).</p>
+<p><span class="plan-step">5. Solve for \(n = 2^k\).</span> All of \(2^k, 2^{k-1}, \dots, 2\) are even, so
+\[ M(2^k) = M(2^{k-1}) + 1 = M(2^{k-2}) + 2 = \dots = M(2^{k-i}) + i = M(1) + k = k + 2. \]
+So \(M(n) = \log_2 n + 2\) for \(n = 2^k\).</p>
+<p>For any \(n \ge 1\) one can show \(\lfloor \log_2 n\rfloor + 2 \le M(n) \le 2\lfloor \log_2 n\rfloor + 2\) (the upper bound is proved in <a href="module2-tasks.html#m2-c1">problem C2.1</a>). Hence \(M(n) \in \Theta(\log n)\).</p>
+<table>
+<tr><th>\(n\)</th><th>naive loop: \(n - 1\) multiplications</th><th>Power: \(M(n)\)</th></tr>
+<tr><td>16</td><td>15</td><td>6</td></tr>
+<tr><td>1 024</td><td>1 023</td><td>12</td></tr>
+<tr><td>1 048 576 \(= 2^{20}\)</td><td>1 048 575</td><td>22</td></tr>
+</table>
+</div>
+
+<!-- ================================================================== -->
+<h2 id="fibonacci" data-short="Warning: Fibonacci">5. A warning example: naive Fibonacci</h2>
+<p>Fibonacci numbers: \(F(0) = 0\), \(F(1) = 1\), \(F(n) = F(n-1) + F(n-2)\). The sequence is 0, 1, 1, 2, 3, 5, 8, 13, 21, … The definition translates directly into a recursive algorithm:</p>
+<pre class="pseudo"><b>ALGORITHM</b> F(n)
+<i>//Computes the nth Fibonacci number recursively by using its definition</i>
+<b>if</b> n ≤ 1 <b>return</b> n
+<b>else return</b> F(n − 1) + F(n − 2)</pre>
+<p>Basic operation: addition. Each call with \(n &gt; 1\) makes two recursive calls and one addition:
+\[ A(n) = A(n-1) + A(n-2) + 1 \quad \text{for } n &gt; 1, \qquad A(0) = 0,\; A(1) = 0. \]</p>
+<p><b>Solving.</b> Backward substitution does not work well with two terms. Instead, add 1 to both sides and let \(B(n) = A(n) + 1\):
+\[ B(n) = B(n-1) + B(n-2), \qquad B(0) = 1,\; B(1) = 1. \]
+This is the Fibonacci recurrence shifted by one position, so \(B(n) = F(n+1)\) and</p>
+\[ \boxed{A(n) = F(n+1) - 1 \in \Theta(\varphi^n)}, \qquad \varphi = \frac{1 + \sqrt5}{2} \approx 1.618, \]
+<p>because \(F(n) = \frac{1}{\sqrt5}(\varphi^n - \hat\varphi^{\,n})\) with \(|\hat\varphi| &lt; 1\), i.e. \(F(n) \approx \varphi^n / \sqrt5\).</p>
+
+<figure id="fib-tree">
+<figcaption>Figure 2.3. Recursion tree of \(F(5)\). Nodes of the same color are the <b>same subproblem computed again</b>: \(F(3)\) is computed 2 times, \(F(2)\) 3 times, \(F(1)\) 5 times. The tree has 15 nodes and 7 internal nodes = \(F(6) - 1 = 7\) additions.</figcaption>
+</figure>
+
+<div class="box warn">
+<span class="box-title">Why is it so slow?</span>
+<p>The algorithm solves the same subproblems again and again. The tree is "almost" a full binary tree of height \(n\), so it has an exponential number of nodes. For \(n = 40\) it makes \(F(41) - 1 = 165\,580\,140\) additions to compute a number that a loop finds with 39 additions.</p>
+</div>
+
+<h3>Fix 1: memoization</h3>
+<p><b>Memoization</b> means storing the result of each subproblem the first time it is computed, and reusing it later.</p>
+<pre class="pseudo"><b>ALGORITHM</b> MemoF(n)
+<i>//Global array memo[0..n] initialized with −1</i>
+<b>if</b> n ≤ 1 <b>return</b> n
+<b>if</b> memo[n] = −1
+    memo[n] ← MemoF(n − 1) + MemoF(n − 2)
+<b>return</b> memo[n]</pre>
+<p>Each value \(F(2), \dots, F(n)\) is computed once, with one addition: \(A(n) = n - 1 \in \Theta(n)\). Extra memory: the array and the stack, \(\Theta(n)\).</p>
+
+<h3>Fix 2: iteration</h3>
+<pre class="pseudo"><b>ALGORITHM</b> Fib(n)
+<i>//Computes the nth Fibonacci number iteratively</i>
+F[0] ← 0;  F[1] ← 1
+<b>for</b> i ← 2 <b>to</b> n <b>do</b>
+    F[i] ← F[i − 1] + F[i − 2]
+<b>return</b> F[n]</pre>
+<p>Additions: \(\sum_{i=2}^{n} 1 = n - 1 \in \Theta(n)\). Keeping only the last two values reduces the memory to \(\Theta(1)\).</p>
+
+<div id="fib-widget" class="widget">
+<label>n = <span id="fib-n"></span> <input type="range" id="fib-range" min="1" max="30" value="10"></label>
+<div class="out" id="fib-out"></div>
+</div>
+
+<!-- ================================================================== -->
+<h2 id="rec-vs-iter" data-short="Recursion vs. iteration">6. Recursion vs. iteration</h2>
+<h3>Stack depth is memory</h3>
+<p>Each active call keeps a <b>stack frame</b> (its parameters, local variables and return address) until it finishes. The maximum number of frames at the same time is the <b>recursion depth</b>, and the extra memory of a recursive algorithm is proportional to it.</p>
+<table>
+<tr><th>Algorithm</th><th>Basic operations</th><th>Recursion depth (memory)</th><th>Iterative version: memory</th></tr>
+<tr><td>Factorial \(F(n)\)</td><td>\(n\)</td><td>\(n + 1\) — \(\Theta(n)\)</td><td>\(\Theta(1)\)</td></tr>
+<tr><td>RecMax</td><td>\(n - 1\)</td><td>\(n\) — \(\Theta(n)\)</td><td>\(\Theta(1)\)</td></tr>
+<tr><td>Hanoi</td><td>\(2^n - 1\)</td><td>\(n\) — \(\Theta(n)\)</td><td>—</td></tr>
+<tr><td>BinRec, Power</td><td>\(\Theta(\log n)\)</td><td>\(\Theta(\log n)\)</td><td>\(\Theta(1)\)</td></tr>
+<tr><td>Naive Fibonacci</td><td>\(F(n+1) - 1\)</td><td>\(n\) — \(\Theta(n)\)</td><td>\(\Theta(1)\)</td></tr>
+</table>
+<div class="box tip">
+<span class="box-title">Note</span>
+<p>The <em>time</em> of naive Fibonacci is exponential, but its <em>memory</em> is only linear: the stack holds just one path from the root to a leaf of the tree at a time. Time is the number of nodes of the recursion tree; memory is its height.</p>
+</div>
+<p>In Python the default recursion limit is about 1000 frames: <code>RecMax</code> on a list of 5000 elements raises <code>RecursionError</code>, while the loop version works for any size.</p>
+
+<h3>Tail recursion</h3>
+<div class="box def">
+<span class="box-title">Definition</span>
+<p>A recursive call is a <b>tail call</b> if it is the <b>last action</b> of the function: its result is returned directly, with nothing left to compute afterwards. A function whose recursive calls are all tail calls is <b>tail-recursive</b>.</p>
+</div>
+<p>The factorial \(F(n) = F(n-1) * n\) is <b>not</b> tail-recursive: after \(F(n-1)\) returns, a multiplication still has to be done, so the frame must be kept. We can make it tail-recursive with an <b>accumulator</b>:</p>
+<pre class="pseudo"><b>ALGORITHM</b> FactAcc(n, acc)
+<i>//Computes n! ∗ acc; call as FactAcc(n, 1)</i>
+<b>if</b> n = 0 <b>return</b> acc
+<b>else return</b> FactAcc(n − 1, acc ∗ n)</pre>
+<p>A tail-recursive function can be mechanically turned into a loop: "replace the parameters and jump to the start". Many compilers (Scheme, Haskell, often C with optimization) do this automatically, so the stack depth becomes \(\Theta(1)\). <b>Python does not</b>, so in Python prefer an explicit loop:</p>
+<pre><code>def fact_loop(n):
+    acc = 1
+    while n &gt; 0:          # FactAcc(n, acc) → FactAcc(n - 1, acc * n)
+        acc, n = acc * n, n - 1
+    return acc</code></pre>
+<p>The number of multiplications is still \(n\); only the memory changes.</p>
+
+<!-- ================================================================== -->
+<h2 id="summary" data-short="Summary & cheat sheet">7. Summary and formula cheat sheet</h2>
+<div class="box summary">
+<span class="box-title">Summary</span>
+<ul>
+<li>Plan: size → basic operation → cases? → <b>recurrence + initial condition</b> → solve.</li>
+<li>Recurrence = (sum of the counts of the recursive calls) + (operations done by the call itself). The base case gives the initial condition.</li>
+<li>Backward substitution: substitute, find the pattern after \(i\) steps, choose \(i\) to reach the initial condition, verify by induction.</li>
+<li>For \(\lfloor n/2 \rfloor\) recurrences, solve for \(n = 2^k\); the smoothness rule extends the order of growth to all \(n\).</li>
+<li>Recursion tree: time = number of nodes (× work per node); memory = height of the tree.</li>
+<li>Repeated subproblems (naive Fibonacci) cause exponential time. Fix: memoization or iteration.</li>
+</ul>
+</div>
+<table>
+<tr><th>Recurrence</th><th>Initial condition</th><th>Solution</th><th>Example</th></tr>
+<tr><td>\(x(n) = x(n-1) + c\)</td><td>\(x(0) = 0\)</td><td>\(cn\)</td><td>Factorial (\(c = 1\))</td></tr>
+<tr><td>\(x(n) = x(n-1) + 1\)</td><td>\(x(1) = 0\)</td><td>\(n - 1\)</td><td>RecMax</td></tr>
+<tr><td>\(x(n) = x(n-1) + n\)</td><td>\(x(0) = 0\)</td><td>\(\frac{n(n+1)}{2}\)</td><td>—</td></tr>
+<tr><td>\(x(n) = 2x(n-1) + 1\)</td><td>\(x(1) = 1\)</td><td>\(2^n - 1\)</td><td>Tower of Hanoi</td></tr>
+<tr><td>\(x(n) = a\,x(n-1)\)</td><td>\(x(1) = c\)</td><td>\(c\,a^{n-1}\)</td><td>—</td></tr>
+<tr><td>\(x(n) = x(n/2) + 1\), \(n = 2^k\)</td><td>\(x(1) = 0\)</td><td>\(\log_2 n\)</td><td>BinRec</td></tr>
+<tr><td>\(x(n) = 2x(n/2) + n\), \(n = 2^k\)</td><td>\(x(1) = 0\)</td><td>\(n\log_2 n\)</td><td>(merge-sort-like)</td></tr>
+<tr><td>\(x(n) = x(n-1) + x(n-2) + 1\)</td><td>\(x(0) = x(1) = 0\)</td><td>\(F(n+1) - 1 \in \Theta(\varphi^n)\)</td><td>Naive Fibonacci</td></tr>
+</table>
+<p>Useful sums: \(\sum_{i=0}^{k} 2^i = 2^{k+1} - 1\); \(1 + 2 + \dots + n = \frac{n(n+1)}{2}\). Useful identity: \(2^{\log_2 n} = n\).</p>
+<p>Ready? Go to the <a href="module2-tasks.html">Module 2 quiz and problems</a>.</p>
+
+<div class="page-nav"></div>
+</main>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const moveCaption = id => { const f = document.getElementById(id); f.appendChild(f.querySelector("figcaption")); };
+
+  drawStack("stack-fig", 4);
+  moveCaption("stack-fig");
+
+  drawTree("hanoi-tree", 4, n => n > 1 ? [n - 1, n - 1] : [], {
+    nodeW: 44, rightPad: 110,
+    levelText: d => `level ${d}: ${2 ** d} move${d ? "s" : ""}`,
+  });
+  moveCaption("hanoi-tree");
+
+  const colors = { 5: "#ffffff", 4: "#ffffff", 3: "#ffe8c7", 2: "#d6f0df", 1: "#e8eefc", 0: "#f3e0f7" };
+  drawTree("fib-tree", 5, n => n > 1 ? [n - 1, n - 2] : [], {
+    nodeW: 46, fmt: n => "F" + n, color: n => colors[n],
+  });
+  moveCaption("fib-tree");
+
+  const fibAdds = n => n <= 1 ? 0 : fibAdds(n - 1) + fibAdds(n - 2) + 1;
+  const rng = document.getElementById("fib-range");
+  const show = () => {
+    const n = +rng.value;
+    document.getElementById("fib-n").textContent = n;
+    const naive = fibAdds(n), fast = Math.max(n - 1, 0);
+    document.getElementById("fib-out").innerHTML =
+      `naive recursive F(${n}): <b>${naive.toLocaleString("en")}</b> additions (counted by running it)<br>` +
+      `memoized / iterative: <b>${fast}</b> additions<br>` +
+      `ratio: <b>${fast ? (naive / fast).toFixed(1) : "—"}</b> times more work`;
+  };
+  rng.oninput = show; show();
+});
+</script>
+</body>
+</html>

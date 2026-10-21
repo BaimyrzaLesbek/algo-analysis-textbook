@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Analysis of Algorithms — E-textbook</title>
+<link rel="stylesheet" href="assets/style.css">
+<script>window.MathJax = { tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"]] } };</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script defer src="assets/site.js"></script>
+</head>
+<body>
+<div class="layout">
+<main>
+
+<h1>Mathematical Analysis of Algorithms</h1>
+<p class="lead">An e-textbook for bachelor's students: how to count the work done by nonrecursive and recursive algorithms, and how to turn that count into an order of growth.</p>
+
+<div class="box goal">
+<span class="box-title">Who is this for?</span>
+<p>Second-year bachelor's students who already know basic programming (loops, arrays, functions) and have seen the idea of "big-O". Every new term is explained the first time it appears, and each one is also collected in the <a href="glossary.html">glossary</a>.</p>
+</div>
+
+<h2 id="contents">Table of contents</h2>
+
+<div class="cards">
+  <a class="card" href="intro.html"><h3>Introduction</h3><p>Input size, basic operation, order of growth, O / Ω / Θ, worst / best / average case. Entry quiz (5 questions).</p></a>
+  <a class="card" href="module1.html"><h3>Module 1</h3><p>Nonrecursive algorithms: the general plan, summation tools, worked examples, average case, typical mistakes, empirical verification.</p></a>
+  <a class="card" href="module1-tasks.html"><h3>Module 1 · Tasks</h3><p>10-question quiz and 13 problems (levels A, B, C, "find the mistake", empirical).</p></a>
+  <a class="card" href="module2.html"><h3>Module 2</h3><p>Recursive algorithms: recurrence relations, backward substitution, induction, Tower of Hanoi, Fibonacci, recursion vs. iteration.</p></a>
+  <a class="card" href="module2-tasks.html"><h3>Module 2 · Tasks</h3><p>10-question quiz and 13 problems (levels A, B, C, "find the mistake", empirical).</p></a>
+  <a class="card" href="glossary.html"><h3>Glossary &amp; sources</h3><p>Key terms in one place and the list of books used.</p></a>
+</div>
+
+<table>
+<tr><th>Part</th><th>Sections</th></tr>
+<tr><td><a href="intro.html">Introduction</a></td><td>
+  <a href="intro.html#size">Input size</a> ·
+  <a href="intro.html#basic-op">Basic operation</a> ·
+  <a href="intro.html#growth">Order of growth</a> ·
+  <a href="intro.html#notation">O, Ω, Θ</a> ·
+  <a href="intro.html#cases">Worst, best, average case</a> ·
+  <a href="intro.html#quiz">Entry quiz</a></td></tr>
+<tr><td><a href="module1.html">Module 1</a></td><td>
+  <a href="module1.html#plan">General plan</a> ·
+  <a href="module1.html#sums">Summation tools</a> ·
+  <a href="module1.html#examples">Worked examples</a> ·
+  <a href="module1.html#original">Original examples</a> ·
+  <a href="module1.html#average">Average case</a> ·
+  <a href="module1.html#mistakes">Typical mistakes</a> ·
+  <a href="module1.html#empirical">Empirical verification</a> ·
+  <a href="module1.html#summary">Summary &amp; cheat sheet</a></td></tr>
+<tr><td><a href="module2.html">Module 2</a></td><td>
+  <a href="module2.html#plan">General plan</a> ·
+  <a href="module2.html#backward">Backward substitution</a> ·
+  <a href="module2.html#examples">Worked examples</a> ·
+  <a href="module2.html#original">Original examples</a> ·
+  <a href="module2.html#fibonacci">Warning: Fibonacci</a> ·
+  <a href="module2.html#rec-vs-iter">Recursion vs. iteration</a> ·
+  <a href="module2.html#summary">Summary &amp; cheat sheet</a></td></tr>
+</table>
+
+<h2 id="how">How to use this textbook</h2>
+<ol>
+  <li>Take the <a href="intro.html#quiz">entry quiz</a>. If you score less than 4 / 5, read the introduction carefully first.</li>
+  <li>Read a module from top to bottom. Each worked example follows the same five steps, so after two or three examples you will start seeing the pattern.</li>
+  <li>Do the module quiz. Every answer option has an explanation, so read them even when you answered correctly.</li>
+  <li>Solve the problems in order A → B → C. Each problem has a <b>hint</b>, an <b>answer</b> and a <b>full solution</b> hidden behind buttons. Try first, then open the hint, and open the solution only at the end.</li>
+  <li>Run the Python code for the empirical tasks and check that the numbers match the formulas.</li>
+</ol>
+
+<div class="box tip">
+<span class="box-title">Notation used</span>
+<p>Pseudocode follows the notation of A. Levitin's textbook: <code>←</code> is assignment, arrays are written \(A[0..n-1]\), and <code>for i ← 0 to n − 1 do</code> includes both ends. Program code is in Python. \(\log n\) without a base means \(\log_2 n\) unless stated otherwise.</p>
+</div>
+
+<div class="page-nav"></div>
+</main>
+</div>
+</body>
+</html>

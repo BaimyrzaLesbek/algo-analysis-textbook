@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 1 tasks — Analysis of Algorithms</title>
+<link rel="stylesheet" href="assets/style.css">
+<script>window.MathJax = { tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"]] } };</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script defer src="assets/site.js"></script>
+</head>
+<body>
+<div class="layout">
+<main>
+
+<h1>Module 1 · Quiz and problems</h1>
+<p class="lead">Check yourself on the analysis of nonrecursive algorithms. Theory: <a href="module1.html">Module 1</a>.</p>
+
+<div class="box tip">
+<span class="box-title">How to work with the problems</span>
+<p>Try each problem on paper first. If you are stuck, open the <b>hint</b>. Compare your result with the <b>answer</b>, and open the <b>full solution</b> only after you have tried.</p>
+</div>
+
+<h2 id="quiz" data-short="Quiz (10)">Quiz: 10 questions</h2>
+<div id="m1-quiz"></div>
+
+<!-- ================================================================== -->
+<h2 id="levelA" data-short="Level A">Level A problems (basic)</h2>
+
+<div class="problem" id="m1-a1">
+<h3>A1. Counting negative numbers <span class="badge lvA">Level A</span></h3>
+<pre class="pseudo"><b>ALGORITHM</b> CountNegatives(A[0..n − 1])
+count ← 0
+<b>for</b> i ← 0 <b>to</b> n − 1 <b>do</b>
+    <b>if</b> A[i] &lt; 0
+        count ← count + 1
+<b>return</b> count</pre>
+<p>Apply the five-step plan: give the input size, the basic operation, say whether there are different cases, write the sum and find \(C(n)\) and its order of growth.</p>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>Which line is executed on <em>every</em> iteration, regardless of the values in the array: the comparison or the increment?</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>\(C(n) = n \in \Theta(n)\), one case.</p></div></details>
+<details class="solution"><summary>Full solution</summary><div class="inner">
+<p><span class="plan-step">1.</span> Input size: the number of elements \(n\).</p>
+<p><span class="plan-step">2.</span> Basic operation: the comparison \(A[i] &lt; 0\). The increment is a bad choice: it runs from 0 to \(n\) times depending on the data.</p>
+<p><span class="plan-step">3.</span> The loop has no early exit, so the number of comparisons is the same for all arrays of size \(n\). One case.</p>
+<p><span class="plan-step">4.</span> \(C(n) = \sum_{i=0}^{n-1} 1\).</p>
+<p><span class="plan-step">5.</span> By \(u - l + 1\): \(C(n) = (n-1) - 0 + 1 = n \in \Theta(n)\).</p>
+</div></details>
+</div>
+
+<div class="problem" id="m1-a2">
+<h3>A2. A sum with a linear term <span class="badge lvA">Level A</span></h3>
+<p>Find a closed-form formula and the order of growth of \(\displaystyle S(n) = \sum_{i=1}^{n} (3i + 2)\). Check your formula for \(n = 2\).</p>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>Split the sum into two sums (rule R2), take the constant out (rule R1), then use \(\sum i = n(n+1)/2\) and \(\sum 1 = n\).</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>\(S(n) = \dfrac{3n^2 + 7n}{2} \in \Theta(n^2)\). For \(n = 2\): \(S(2) = 13\).</p></div></details>
+<details class="solution"><summary>Full solution</summary><div class="inner">
+\[ S(n) = 3\sum_{i=1}^{n} i + \sum_{i=1}^{n} 2 = 3\cdot\frac{n(n+1)}{2} + 2n = \frac{3n^2 + 3n + 4n}{2} = \frac{3n^2 + 7n}{2}. \]
+<p>The leading term is \(\tfrac32 n^2\), so \(S(n) \in \Theta(n^2)\).</p>
+<p>Check: directly \(S(2) = (3+2) + (6+2) = 13\); by the formula \((12 + 14)/2 = 13\). ✔</p>
+</div></details>
+</div>
+
+<div class="problem" id="m1-a3">
+<h3>A3. Counting iterations with unusual bounds <span class="badge lvA">Level A</span></h3>
+<pre class="pseudo">x ← 0
+<b>for</b> i ← 5 <b>to</b> 2n − 1 <b>do</b>
+    x ← x + i</pre>
+<p>For \(n \ge 3\), how many times is the addition \(x + i\) executed? What is the order of growth?</p>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>The number of integers from \(l\) to \(u\) is \(u - l + 1\). Check your answer with \(n = 3\).</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>\(C(n) = 2n - 5 \in \Theta(n)\).</p></div></details>
+<details class="solution"><summary>Full solution</summary><div class="inner">
+<p>The basic operation is the addition; it is executed once per value of \(i\).</p>
+\[ C(n) = \sum_{i=5}^{2n-1} 1 = (2n - 1) - 5 + 1 = 2n - 5. \]
+<p>Check for \(n = 3\): \(i\) goes from 5 to 5, one iteration, and \(2\cdot3 - 5 = 1\). ✔ The order of growth is \(\Theta(n)\).</p>
+</div></details>
+</div>
+
+<div class="problem" id="m1-a4">
+<h3>A4. Sum of all entries of a rectangular matrix <span class="badge lvA">Level A</span></h3>
+<pre class="pseudo"><b>ALGORITHM</b> MatrixTotal(A[0..n − 1, 0..m − 1])
+s ← 0
+<b>for</b> i ← 0 <b>to</b> n − 1 <b>do</b>
+    <b>for</b> j ← 0 <b>to</b> m − 1 <b>do</b>
+        s ← s + A[i, j]
+<b>return</b> s</pre>
+<p>Count the additions as a function of \(n\) and \(m\). What do you get for a square matrix (\(m = n\))? How many additions for a \(7 \times 4\) matrix?</p>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>The bounds of the inner loop do not depend on \(i\). Each loop gives one sum.</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>\(C(n, m) = nm\); for a square matrix \(n^2\); for \(7 \times 4\): 28 additions.</p></div></details>
+<details class="solution"><summary>Full solution</summary><div class="inner">
+<p>Input size: two parameters \(n\) and \(m\) (number of rows and columns). Basic operation: the addition. One case.</p>
+\[ C(n, m) = \sum_{i=0}^{n-1} \sum_{j=0}^{m-1} 1 = \sum_{i=0}^{n-1} m = nm. \]
+<p>For \(m = n\): \(C = n^2 \in \Theta(n^2)\). Note: in terms of the number of entries \(N = nm\) the algorithm is linear, \(\Theta(N)\) — the order "depends on how you measure the size". For \(7 \times 4\): \(7 \cdot 4 = 28\).</p>
+</div></details>
+</div>
+
+<!-- ================================================================== -->
+<h2 id="levelB" data-short="Level B">Level B problems (intermediate)</h2>
+
+<div class="problem" id="m1-b1">
+<h3>B1. Inner loop starting at \(i\) <span class="badge lvB">Level B</span></h3>
+<pre class="pseudo">x ← 0
+<b>for</b> i ← 1 <b>to</b> n <b>do</b>
+    <b>for</b> j ← i <b>to</b> n <b>do</b>
+        x ← x + 1</pre>
+<p>Find the exact number of executions of \(x \leftarrow x + 1\) and the order of growth.</p>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>The inner loop runs \(n - i + 1\) times. Write out the terms for \(i = 1, 2, \dots, n\) — what familiar sum do you get?</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>\(C(n) = \dfrac{n(n+1)}{2} \in \Theta(n^2)\).</p></div></details>
+<details class="solution"><summary>Full solution</summary><div class="inner">
+\[ C(n) = \sum_{i=1}^{n} \sum_{j=i}^{n} 1 = \sum_{i=1}^{n} (n - i + 1). \]
+<p>For \(i = 1\) the term is \(n\), for \(i = 2\) it is \(n - 1\), …, for \(i = n\) it is \(1\). So
+\[ C(n) = n + (n-1) + \dots + 1 = \sum_{k=1}^{n} k = \frac{n(n+1)}{2} \in \Theta(n^2). \]</p>
+<p>Check \(n = 3\): \(3 + 2 + 1 = 6 = 3\cdot4/2\). ✔</p>
+</div></details>
+</div>
+
+<div class="problem" id="m1-b2">
+<h3>B2. Three nested loops with dependent bounds <span class="badge lvB">Level B</span></h3>
+<pre class="pseudo">count ← 0
+<b>for</b> i ← 0 <b>to</b> n − 1 <b>do</b>
+    <b>for</b> j ← 0 <b>to</b> i <b>do</b>
+        <b>for</b> k ← 0 <b>to</b> j <b>do</b>
+            count ← count + 1
+<b>return</b> count</pre>
+<p>Find the exact value returned by the algorithm (the number of executions of the innermost line) and its order of growth.</p>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>Simplify from the inside out. The innermost sum is \(j + 1\). Then \(\sum_{j=0}^{i}(j+1) = \frac{(i+1)(i+2)}{2}\). For the last step, write \(m(m+1) = m^2 + m\) and use the formulas for \(\sum m^2\) and \(\sum m\).</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>\(C(n) = \dfrac{n(n+1)(n+2)}{6} \in \Theta(n^3)\).</p></div></details>
+<details class="solution"><summary>Full solution</summary><div class="inner">
+\[ C(n) = \sum_{i=0}^{n-1} \sum_{j=0}^{i} \sum_{k=0}^{j} 1 = \sum_{i=0}^{n-1} \sum_{j=0}^{i} (j+1) = \sum_{i=0}^{n-1} \frac{(i+1)(i+2)}{2}. \]
+<p>Substitute \(m = i + 1\) (\(m\) from 1 to \(n\)):</p>
+\[ C(n) = \frac12 \sum_{m=1}^{n} m(m+1) = \frac12\Big(\sum_{m=1}^{n} m^2 + \sum_{m=1}^{n} m\Big)
+= \frac12\Big(\frac{n(n+1)(2n+1)}{6} + \frac{n(n+1)}{2}\Big). \]
+\[ = \frac{n(n+1)}{2}\cdot\frac{(2n+1) + 3}{6} = \frac{n(n+1)}{2}\cdot\frac{2n+4}{6} = \frac{n(n+1)(n+2)}{6}. \]
+<p>The leading term is \(n^3/6\), so \(C(n) \in \Theta(n^3)\). Check \(n = 2\): \(i = 0\) gives 1, \(i = 1\) gives \(1 + 2 = 3\); total 4, and \(2\cdot3\cdot4/6 = 4\). ✔</p>
+</div></details>
+</div>
+
+<div class="problem" id="m1-b3">
+<h3>B3. Is the array sorted? Case analysis <span class="badge lvB">Level B</span></h3>
+<pre class="pseudo"><b>ALGORITHM</b> IsSorted(A[0..n − 1])
+<i>//Returns true if A is in nondecreasing order</i>
+<b>for</b> i ← 0 <b>to</b> n − 2 <b>do</b>
+    <b>if</b> A[i] &gt; A[i + 1] <b>return</b> false
+<b>return</b> true</pre>
+<p>For \(n \ge 2\), find \(C_{worst}(n)\) and \(C_{best}(n)\) for the comparison \(A[i] &gt; A[i+1]\). Give an example input for each case. What can you say about the algorithm using \(O\)?</p>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>Find the input that makes the loop stop as early as possible, and the input that makes it run to the end.</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>\(C_{worst}(n) = n - 1 \in \Theta(n)\) (for example a sorted array); \(C_{best}(n) = 1 \in \Theta(1)\) (for example \(A[0] &gt; A[1]\)). The algorithm is in \(O(n)\).</p></div></details>
+<details class="solution"><summary>Full solution</summary><div class="inner">
+<p>Input size \(n\), basic operation the comparison. Because of <code>return false</code> the count depends on the input, so we consider cases.</p>
+<p><b>Worst case:</b> the loop runs for all \(i\) from 0 to \(n-2\). This happens when the array is sorted (e.g. \(1, 2, 3, 4\)) or when the only "descent" is the last pair (e.g. \(1, 2, 4, 3\)).
+\[ C_{worst}(n) = \sum_{i=0}^{n-2} 1 = n - 1. \]</p>
+<p><b>Best case:</b> \(A[0] &gt; A[1]\), e.g. \(2, 1, 3, 4\). The first comparison returns false: \(C_{best}(n) = 1\).</p>
+<p>Since every input needs between 1 and \(n - 1\) comparisons, the algorithm is in \(O(n)\) (but not in \(\Theta(n)\) for all inputs).</p>
+</div></details>
+</div>
+
+<div class="problem" id="m1-b4">
+<h3>B4. Inner bound \(i^2\) <span class="badge lvB">Level B</span></h3>
+<pre class="pseudo"><b>for</b> i ← 1 <b>to</b> n <b>do</b>
+    <b>for</b> j ← 1 <b>to</b> i ∗ i <b>do</b>
+        op</pre>
+<p>Find the exact number of executions of <code>op</code> and its order of growth. Is it \(\Theta(n^2)\)?</p>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>The inner loop runs \(i^2\) times, not \(i\) times. Which standard formula do you need?</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>\(C(n) = \dfrac{n(n+1)(2n+1)}{6} \in \Theta(n^3)\) — not \(\Theta(n^2)\).</p></div></details>
+<details class="solution"><summary>Full solution</summary><div class="inner">
+\[ C(n) = \sum_{i=1}^{n} \sum_{j=1}^{i^2} 1 = \sum_{i=1}^{n} i^2 = \frac{n(n+1)(2n+1)}{6} \approx \frac{n^3}{3} \in \Theta(n^3). \]
+<p>Two nested loops do not automatically mean \(\Theta(n^2)\): you must look at the bounds. Here the inner bound grows like \(n^2\), so in total we get \(n^3\). Check \(n = 2\): \(1 + 4 = 5\) and \(2\cdot3\cdot5/6 = 5\). ✔</p>
+</div></details>
+</div>
+
+<!-- ================================================================== -->
+<h2 id="levelC" data-short="Level C">Level C problems (advanced)</h2>
+
+<div class="problem" id="m1-c1">
+<h3>C1. Average case of a search with a "popular" first element <span class="badge lvC">Level C</span></h3>
+<p>Sequential search (see <a href="module1.html#average">Module 1, Section 5</a>) is used on an array of \(n \ge 2\) elements, where the first element is a frequently requested item. Assume:</p>
+<ul>
+<li>the search is successful with probability \(p\);</li>
+<li>if it is successful, the key is at position 1 with probability \(\tfrac12\); otherwise it is equally likely to be at any of the positions \(2, \dots, n\).</li>
+</ul>
+<p>Find \(C_{avg}(n)\) for the key comparisons. Compare with the uniform case for \(p = 1\).</p>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>Each of positions \(2, \dots, n\) has probability \(\frac{1}{2(n-1)}\) inside the successful search. A key at position \(i\) costs \(i\) comparisons. Use \(\sum_{i=2}^{n} i = \frac{n(n+1)}{2} - 1 = \frac{(n-1)(n+2)}{2}\).</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>\(C_{avg}(n) = \dfrac{p(n+4)}{4} + n(1-p)\). For \(p = 1\): \(\frac{n+4}{4} \approx \frac n4\), about half of the uniform \(\frac{n+1}{2}\). Still \(\Theta(n)\).</p></div></details>
+<details class="solution"><summary>Full solution</summary><div class="inner">
+<p><b>Successful search.</b> Expected number of comparisons, given that the key is present:</p>
+\[ E_{succ} = \frac12\cdot 1 + \sum_{i=2}^{n} \frac{1}{2(n-1)}\cdot i = \frac12 + \frac{1}{2(n-1)}\cdot\frac{(n-1)(n+2)}{2} = \frac12 + \frac{n+2}{4} = \frac{n+4}{4}. \]
+<p><b>Unsuccessful search</b> (probability \(1 - p\)): \(n\) comparisons.</p>
+<p><b>Average:</b>
+\[ C_{avg}(n) = p\cdot\frac{n+4}{4} + (1-p)\cdot n. \]</p>
+<p>Check \(n = 2\), \(p = 1\): position 1 (1 comparison) or position 2 (2 comparisons), each with probability \(\tfrac12\): average \(1.5\); formula \(6/4 = 1.5\). ✔</p>
+<p>For \(p = 1\) the cost is \(\approx n/4\) instead of \(\approx n/2\): putting popular items first halves the average work, but the order of growth stays \(\Theta(n)\).</p>
+</div></details>
+</div>
+
+<div class="problem" id="m1-c2">
+<h3>C2. A halving outer loop with a growing inner loop <span class="badge lvC">Level C</span></h3>
+<pre class="pseudo">i ← n
+<b>while</b> i ≥ 1 <b>do</b>
+    <b>for</b> j ← 1 <b>to</b> i <b>do</b>
+        op
+    i ← ⌊i/2⌋</pre>
+<p>Let \(n = 2^k\). (a) How many times does the outer loop run? (b) Find the exact number of executions of <code>op</code>. (c) A student says: "The outer loop runs \(\log n\) times and the inner loop up to \(n\) times, so the algorithm is \(\Theta(n \log n)\)". Is this correct?</p>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>Write down the values of \(i\): \(2^k, 2^{k-1}, \dots, 2, 1\). The inner loop runs \(i\) times for each of them. You get a geometric series.</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>(a) \(k + 1 = \log_2 n + 1\) times. (b) \(C(n) = 2n - 1 \in \Theta(n)\). (c) No: \(n \log n\) is only an upper bound, the true order is \(\Theta(n)\).</p></div></details>
+<details class="solution"><summary>Full solution</summary><div class="inner">
+<p>(a) \(i\) takes the values \(2^k, 2^{k-1}, \dots, 2^0 = 1\); after that \(i = 0\) and the loop stops. That is \(k + 1 = \log_2 n + 1\) iterations.</p>
+<p>(b) For \(i = 2^t\) the inner loop runs \(2^t\) times:</p>
+\[ C(n) = \sum_{t=0}^{k} 2^t = 2^{k+1} - 1 = 2\cdot 2^k - 1 = 2n - 1. \]
+<p>(c) The student multiplied the number of outer iterations by the <em>largest</em> inner count. This gives a correct upper bound \(O(n \log n)\), but not a tight one, because the inner loop gets smaller each time: \(n + n/2 + n/4 + \dots &lt; 2n\). The correct answer is \(\Theta(n)\).</p>
+<p>For any \(n\) (not only powers of 2) the same argument gives \(C(n) \le n + n/2 + n/4 + \dots &lt; 2n\) and \(C(n) \ge n\), so \(C(n) \in \Theta(n)\).</p>
+</div></details>
+</div>
+
+<!-- ================================================================== -->
+<h2 id="mistake" data-short="Find the mistake">"Find the mistake" problems</h2>
+
+<div class="problem" id="m1-f1">
+<h3>F1. Is trial division fast? <span class="badge mist">Find the mistake</span></h3>
+<pre class="pseudo"><b>ALGORITHM</b> IsPrime(n)
+<i>//Input: An integer n ≥ 2</i>
+<b>for</b> d ← 2 <b>to</b> ⌊√n⌋ <b>do</b>
+    <b>if</b> n mod d = 0 <b>return</b> false
+<b>return</b> true</pre>
+<p><b>A student's solution:</b></p>
+<div class="box">
+<p>"Input size: \(n\). Basic operation: \(n \bmod d\). Worst case: \(n\) is prime, the loop runs completely, \(C_{worst}(n) = \lfloor\sqrt n\rfloor - 1 \in \Theta(\sqrt n)\). Since \(\sqrt n\) grows slower than \(n\), the algorithm is <b>sublinear</b>. It is efficient even for numbers with 1000 decimal digits."</p>
+</div>
+<p>Find the mistake and correct the conclusion.</p>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>How many symbols do you need to write down the input? What is the size of a number with 1000 decimal digits?</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>The mistake is <b>size vs. value</b>: the input size is the number of bits \(b = \lfloor\log_2 n\rfloor + 1\), not \(n\). Then \(\sqrt n \approx 2^{b/2}\), so the algorithm is <b>exponential</b> in the input size.</p></div></details>
+<details class="solution"><summary>Full solution</summary><div class="inner">
+<p>The count \(\lfloor\sqrt n\rfloor - 1\) is correct as a function of the <em>value</em> \(n\). The mistake is in step 1 of the plan: the input is a single number, and its size is the length of its representation, \(b = \lfloor \log_2 n \rfloor + 1\) bits. Then \(n \approx 2^b\) and</p>
+\[ C_{worst} \approx \sqrt{n} \approx \sqrt{2^b} = 2^{b/2} \in \Theta\big((\sqrt2)^b\big), \]
+<p>which is exponential in \(b\). For a 1000-digit number, \(\sqrt n \approx 10^{500}\) divisions — impossible on any computer.</p>
+<p>Correct conclusion: the algorithm is practical only for small numbers; it is <b>not</b> efficient in terms of input size.</p>
+</div></details>
+</div>
+
+<div class="problem" id="m1-f2">
+<h3>F2. Counting equal pairs <span class="badge mist">Find the mistake</span></h3>
+<pre class="pseudo"><b>ALGORITHM</b> CountEqualPairs(A[0..n − 1])
+count ← 0
+<b>for</b> i ← 0 <b>to</b> n − 2 <b>do</b>
+    <b>for</b> j ← i + 1 <b>to</b> n − 1 <b>do</b>
+        <b>if</b> A[i] = A[j]  count ← count + 1
+<b>return</b> count</pre>
+<p><b>A student's solution:</b></p>
+<div class="box">
+<p>"Basic operation: the comparison \(A[i] = A[j]\). No early exit, one case. For a fixed \(i\) the inner loop runs \(n - i\) times, so
+\[ C(n) = \sum_{i=0}^{n-2} (n - i) = n(n-1) - \frac{(n-2)(n-1)}{2} = \frac{(n-1)(n+2)}{2} \in \Theta(n^2)." \]</p>
+</div>
+<p>Find the mistake and give the correct formula.</p>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>Test the student's formula for \(n = 2\). How many comparisons does the algorithm actually make?</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p><b>Off-by-one error</b>: \(j\) goes from \(i+1\) to \(n-1\), which is \(n - 1 - i\) values, not \(n - i\). Correct: \(C(n) = \dfrac{n(n-1)}{2}\). The order \(\Theta(n^2)\) happens to be right, but the exact formula is wrong.</p></div></details>
+<details class="solution"><summary>Full solution</summary><div class="inner">
+<p>Check: for \(n = 2\) the algorithm makes one comparison (\(A[0] = A[1]\)), but the student's formula gives \(1\cdot4/2 = 2\). So the formula is wrong.</p>
+<p>The number of values of \(j\) from \(i + 1\) to \(n - 1\) is \((n-1) - (i+1) + 1 = n - 1 - i\). Then</p>
+\[ C(n) = \sum_{i=0}^{n-2} (n - 1 - i) = (n-1) + (n-2) + \dots + 1 = \frac{(n-1)n}{2}. \]
+<p>Check \(n = 2\): \(1\cdot2/2 = 1\). ✔ (The student's algebra after the first step was correct; the error was only in the number of terms.)</p>
+</div></details>
+</div>
+
+<!-- ================================================================== -->
+<h2 id="emp" data-short="Empirical task">Empirical verification task</h2>
+
+<div class="problem" id="m1-e1">
+<h3>E1. Check two formulas with an operation counter <span class="badge emp">Empirical</span></h3>
+<p>Write a Python program that:</p>
+<ol>
+<li>implements the loops of problem <a href="#m1-b2">B2</a> and problem <a href="#m1-c2">C2</a> with a counter next to the basic operation;</li>
+<li>runs B2 for \(n = 5, 10, 20, 40, 80\) and C2 for \(n = 2^4, 2^6, \dots, 2^{14}\);</li>
+<li>prints a table: \(n\), counted value, value of the formula, and the ratio counted / \(g(n)\), where \(g(n) = n^3\) for B2 and \(g(n) = n\) for C2;</li>
+<li>states a conclusion: are the formulas correct? Which constant does the ratio approach?</li>
+</ol>
+<details class="hint"><summary>Hint</summary><div class="inner"><p>Pseudocode <code>for j ← 0 to i</code> becomes <code>for j in range(i + 1)</code> in Python (the upper bound of <code>range</code> is not included). <code>⌊i/2⌋</code> is <code>i // 2</code>.</p></div></details>
+<details class="answer"><summary>Answer</summary><div class="inner"><p>Counted values equal \(n(n+1)(n+2)/6\) and \(2n - 1\) exactly. The ratios approach \(1/6 \approx 0.167\) and \(2\).</p></div></details>
+<details class="solution"><summary>Full solution (code)</summary><div class="inner">
+<pre><code>def b2(n):
+    count = 0
+    for i in range(n):              # i = 0 .. n-1
+        for j in range(i + 1):      # j = 0 .. i
+            for k in range(j + 1):  # k = 0 .. j
+                count += 1
+    return count
+
+def c2(n):
+    count = 0
+    i = n
+    while i >= 1:
+        for j in range(i):          # j = 1 .. i
+            count += 1
+        i //= 2
+    return count
+
+print(f"{'n':>6} {'counted':>10} {'formula':>10} {'ratio':>8}")
+for n in [5, 10, 20, 40, 80]:
+    c, f = b2(n), n * (n + 1) * (n + 2) // 6
+    print(f"{n:>6} {c:>10} {f:>10} {c / n**3:>8.4f}")
+
+for k in range(4, 15, 2):
+    n = 2 ** k
+    c, f = c2(n), 2 * n - 1
+    print(f"{n:>6} {c:>10} {f:>10} {c / n:>8.4f}")</code></pre>
+<p>Output (B2): 35, 220, 1540, 11480, 88560 — equal to the formula. Ratios 0.28, 0.22, 0.19, 0.179, 0.173 → \(1/6\).<br>
+Output (C2): 31, 127, 511, … , 32767 — equal to \(2n-1\). Ratios → 2.</p>
+<figure><img src="code/module1_plots.png" alt="Counted values vs formulas for B2 and C2" style="max-width:100%"><figcaption>Counted values (dots) lie exactly on the formula curves. For C2 the counts for all \(n\) (not only powers of 2) stay between \(n\) and \(2n - 1\).</figcaption></figure>
+<p><b>Conclusion:</b> both formulas are confirmed. The leading constant of B2 is \(\tfrac16\) (from \(n^3/6\)), so B2 is \(\Theta(n^3)\); C2 is \(\Theta(n)\) with constant 2. The full program with a plot is <code>code/empirical_module1.py</code>.</p>
+</div></details>
+</div>
+
+<div class="page-nav"></div>
+</main>
+</div>
+
+<script>
+const R = String.raw;
+document.addEventListener("DOMContentLoaded", () => {
+  renderQuiz("m1-quiz", [
+    { q: "An algorithm computes the sum of all elements of an array. What is the most natural basic operation?",
+      options: [
+        { t: "Addition of an element to the running sum", ok: true, why: "It is executed once for every element, inside the loop." },
+        { t: "Assignment <code>s ← 0</code>", ok: false, why: "It is executed only once, before the loop." },
+        { t: "Returning the result", ok: false, why: "Executed once; it does not reflect the work." },
+        { t: "Comparison of two elements", ok: false, why: "Summing does not compare elements at all." },
+      ]},
+    { q: R`How many times does the loop <code>for i ← 3 to n do</code> execute its body (\(n \ge 3\))?`,
+      options: [
+        { t: R`\(n - 3\)`, ok: false, why: R`Forgets the "+1": from 3 to \(n\) there are \(n - 3 + 1\) numbers.` },
+        { t: R`\(n - 2\)`, ok: true, why: R`By \(u - l + 1 = n - 3 + 1\).` },
+        { t: R`\(n\)`, ok: false, why: R`That would be the count for a loop from 1 to \(n\).` },
+        { t: R`\(n - 4\)`, ok: false, why: R`Subtracting too much; check with \(n = 3\): exactly one iteration.` },
+      ]},
+    { q: R`\(\displaystyle\sum_{i=1}^{n} i = \;?\)`,
+      options: [
+        { t: R`\(\frac{n(n+1)}{2}\)`, ok: true, why: "The standard formula (S2) — Gauss's sum." },
+        { t: R`\(\frac{n(n-1)}{2}\)`, ok: false, why: R`This is \(\sum_{i=0}^{n-1} i\) or \(\sum_{i=1}^{n-1} i\), the sum up to \(n-1\).` },
+        { t: R`\(n^2\)`, ok: false, why: R`The order of growth is \(n^2\), but the exact value is about half of it.` },
+        { t: R`\(\frac{n(n+1)(2n+1)}{6}\)`, ok: false, why: R`This is the sum of squares \(\sum i^2\).` },
+      ]},
+    { q: R`What is the order of growth of \(\displaystyle\sum_{i=1}^{n} i^3\)?`,
+      options: [
+        { t: R`\(\Theta(n^3)\)`, ok: false, why: R`Summing \(n\) terms of size up to \(n^3\) adds one to the exponent.` },
+        { t: R`\(\Theta(n^4)\)`, ok: true, why: R`By (S5): \(\sum i^k \in \Theta(n^{k+1})\), here \(k = 3\).` },
+        { t: R`\(\Theta(3^n)\)`, ok: false, why: "There is no exponential: the terms are powers of i, not powers of 3." },
+        { t: R`\(\Theta(n^2)\)`, ok: false, why: R`Too small: already the last term alone is \(n^3\).` },
+      ]},
+    { q: R`How many iterations does this loop make: <code>i ← 1; while i ≤ n do i ← 3 ∗ i</code>?`,
+      options: [
+        { t: R`\(\Theta(n)\)`, ok: false, why: "That would be true if i were increased by a constant, not multiplied." },
+        { t: R`\(\Theta(n/3)\)`, ok: false, why: R`\(n/3\) is still \(\Theta(n)\); multiplication grows much faster than addition.` },
+        { t: R`\(\Theta(\log n)\)`, ok: true, why: R`After \(t\) iterations \(i = 3^t\); the loop stops when \(3^t &gt; n\), i.e. after about \(\log_3 n\) iterations, and \(\log_3 n \in \Theta(\log n)\).` },
+        { t: R`\(\Theta(1)\)`, ok: false, why: R`The number of iterations grows with \(n\), although slowly.` },
+      ]},
+    { q: R`Three nested loops each run from 0 to \(n-1\) independently, with one operation inside. The count is ...`,
+      options: [
+        { t: R`\(3n\)`, ok: false, why: "That would be three loops one after another, not nested." },
+        { t: R`\(n^3\)`, ok: true, why: R`Nested independent loops multiply: \(\sum\sum\sum 1 = n \cdot n \cdot n\).` },
+        { t: R`\(\frac{n^3}{6}\)`, ok: false, why: R`This is close to the count for dependent bounds \(k \le j \le i\), not independent loops.` },
+        { t: R`\(n^2\)`, ok: false, why: "Each of the three loops contributes a factor n." },
+      ]},
+    { q: "An algorithm contains an early <code>return</code> inside its loop. What does the plan of analysis require?",
+      options: [
+        { t: "Ignore the return and count as if the loop always finishes", ok: false, why: "That gives only the worst case, and presents it as the only answer." },
+        { t: "Analyze the worst, best (and if needed, average) cases separately", ok: true, why: "Step 3 of the plan: the count depends on the input, not only on n." },
+        { t: R`Use only \(n = 1\)`, ok: false, why: "Cases are about different inputs of the same size, not about small n." },
+        { t: "The algorithm cannot be analyzed", ok: false, why: "It can — we just need to consider cases." },
+      ]},
+    { q: R`\(\displaystyle\sum_{i=0}^{n} 2^i = \;?\)`,
+      options: [
+        { t: R`\(2^n - 1\)`, ok: false, why: R`That is \(\sum_{i=0}^{n-1} 2^i\); the last term \(2^n\) is missing.` },
+        { t: R`\(2^{n+1} - 1\)`, ok: true, why: R`Geometric series (S4) with \(a = 2\): \((2^{n+1} - 1)/(2 - 1)\).` },
+        { t: R`\(2^{n+1}\)`, ok: false, why: R`Off by one: check \(n = 0\): the sum is 1, not 2.` },
+        { t: R`\(n \cdot 2^n\)`, ok: false, why: R`Too large: the terms are not all equal to \(2^n\).` },
+      ]},
+    { q: R`Sequential search, the key is always present (\(p = 1\)) and is equally likely at each position. \(C_{avg}(n) = \;?\)`,
+      options: [
+        { t: R`\(\frac{n+1}{2}\)`, ok: true, why: R`Put \(p = 1\) into \(\frac{p(n+1)}{2} + n(1-p)\).` },
+        { t: R`\(n\)`, ok: false, why: "That is the worst case (or the case p = 0)." },
+        { t: "1", ok: false, why: "That is the best case." },
+        { t: R`\(\frac{n}{4}\)`, ok: false, why: "Too small for a uniform distribution; on average half the array is checked." },
+      ]},
+    { q: R`A primality test tries every divisor from 2 to \(n - 1\). Let \(b\) be the number of bits of \(n\). The worst case in terms of the input size is ...`,
+      options: [
+        { t: R`\(\Theta(b)\)`, ok: false, why: R`The loop runs about \(n\) times, and \(n\) is not proportional to its number of bits.` },
+        { t: R`\(\Theta(n)\), so the algorithm is linear`, ok: false, why: R`This uses the value as the size — the typical "size vs. value" mistake.` },
+        { t: R`\(\Theta(2^b)\)`, ok: true, why: R`About \(n \approx 2^b\) divisions: exponential in the input size.` },
+        { t: R`\(\Theta(b^2)\)`, ok: false, why: "That would be a polynomial algorithm, but the loop is exponential in b." },
+      ]},
+  ]);
+});
+</script>
+</body>
+</html>

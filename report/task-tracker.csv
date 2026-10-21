@@ -1,0 +1,27 @@
+ID,Task,Owner,Reviewer,Plan days,Deadline,Status,Notes
+1,Assign roles and choose platform (custom HTML + GitHub Pages),Both,-,1-2,,Done,
+2,Textbook structure (table of contents) sent to instructor,Student 1,Student 2,1-2,,To do,
+3,Introduction: theory + entry quiz (5 questions),Student 1,Student 2,3-6,,Draft ready,
+4,Module 1 theory: plan + summation tools,Student 1,Student 2,3-6,,Draft ready,
+5,Module 1 worked examples (MaxElement; UniqueElements; MatrixMult; dependent bound; Binary),Student 1,Student 2,3-6,,Draft ready,
+6,Module 1 original examples (SelectionSort; PrefixAverages),Student 1,Student 2,3-6,,Draft ready,
+7,Module 1 average case + typical mistakes + empirical section,Student 1,Student 2,3-6,,Draft ready,
+8,Interim check: show Module 1 to instructor,Both,-,7,,To do,
+9,Module 2 theory: plan + backward substitution,Student 2,Student 1,8-10,,Draft ready,
+10,Module 2 worked examples (Factorial; Hanoi + tree; BinRec),Student 2,Student 1,8-10,,Draft ready,
+11,Module 2 original examples (RecMax; Power),Student 2,Student 1,8-10,,Draft ready,
+12,Module 2 Fibonacci + recursion vs iteration,Student 2,Student 1,8-10,,Draft ready,
+13,Module 1 quiz (10) + problems (13),Student 1,Student 2,8-10,,Draft ready,
+14,Module 2 quiz (10) + problems (13),Student 2,Student 1,8-10,,Draft ready,
+15,Python: empirical_module1.py,Student 1,Student 2,8-10,,Done,Runs; output matches formulas
+16,Python: empirical_module2.py,Student 2,Student 1,8-10,,Done,Runs; output matches formulas
+17,Python: verify_answers.py (all answers),Both,-,8-10,,Done,60/60 checks pass
+18,Glossary + sources,Student 2,Student 1,8-10,,Draft ready,
+19,Cross-check Module 1 by hand,Student 2,-,11-12,,To do,
+20,Cross-check Module 2 by hand,Student 1,-,11-12,,To do,
+21,Test with 1-2 bachelor's students; collect feedback,Both,-,11-12,,To do,
+22,Corrections after feedback,Both,-,13,,To do,
+23,Publish on GitHub Pages; check link opens,Student 2,Student 1,13,,To do,
+24,Report (2-3 pages),Both,-,13,,Draft ready,Fill in names; AI use; feedback
+25,Defense presentation (7-10 min; each presents own part),Both,-,13,,To do,
+26,Defense,Both,-,14,,To do,
